@@ -11,5 +11,3 @@ The source code documentation comes from the WFDB Programmer's Guide by George B
 For more information on the WFDB Library please visit the official page:
 
 http://physionet.org/
-
-Last edited Mon at 11:
