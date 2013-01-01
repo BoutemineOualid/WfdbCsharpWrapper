@@ -97,6 +97,9 @@ namespace WfdbCsharpWrapper
             set { info = value; }
         }
 
+        /// <summary>
+        /// Gets a Boolean value indicating whether this record is new or not.
+        /// </summary>
         public bool IsNew { get; private set; }
 
         /// <summary>
@@ -123,7 +126,11 @@ namespace WfdbCsharpWrapper
         #endregion
 
         #region Methods
-
+        /// <summary>
+        /// Returns the specified number of available samples from the available signals at the same time.
+        /// </summary>
+        /// <param name="numberOfSamples">Number of samples to be returned</param>
+        /// <returns>A list of sample vectors where each entry holds the a vector containing the samples available at the current pointer in each signal.</returns>
         public List<Sample[]> GetSamples(int numberOfSamples)
         {
             return Sample.GetSamples(numberOfSamples, this.Signals.Count);
@@ -132,7 +139,7 @@ namespace WfdbCsharpWrapper
         /// <summary>
         /// Resets the signal input file pointers so that the next samples returned by <see cref="Signal.ReadNext(int)"/> and <see cref="Record.GetSamples"/> 
         /// </summary>
-        /// <param name="t"></param>
+        /// <param name="t">The new pointer position.</param>
         public void Seek(Time t)
         {
             var ret = PInvoke.isigsettime(t);
@@ -146,6 +153,11 @@ namespace WfdbCsharpWrapper
             }
         }
 
+        /// <summary>
+        /// Sets the current time (pointer) for the specified group.
+        /// </summary>
+        /// <param name="group">The group's number</param>
+        /// <param name="t">The new time.</param>
         public static void SetGroupTime(int group, Time t)
         {
             var ret = PInvoke.isgsettime(group, t);

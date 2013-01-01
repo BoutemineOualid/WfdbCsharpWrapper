@@ -45,7 +45,7 @@ namespace WfdbCsharpWrapper
         public Frequency(double value)
         {
             if (value<0)
-                throw new ArgumentException("value", "Invalid value, please use positive values.");
+                throw new ArgumentException("Invalid value, please use positive values.", "value");
             this.value = value;
         }
 
@@ -73,9 +73,9 @@ namespace WfdbCsharpWrapper
         {
             var ret = PInvoke.sampfreq(record);
             if (ret == -1)
-                throw new ArgumentException("record", "Unable to read header file.");
+                throw new ArgumentException("Unable to read header file.", "record");
             else if (ret == -2)
-                throw new ArgumentException("record", "Incorrect header format.");
+                throw new ArgumentException("Incorrect header format.", "record");
             return ret;
         }
 
@@ -123,7 +123,9 @@ namespace WfdbCsharpWrapper
             }
         }
 
-
+        /// <summary>
+        /// Gets or sets the current wfdb's output annotation frequency.
+        /// </summary>
         public static Frequency OutputAnnotationFrequency
         {
             get { return PInvoke.getafreq(); }

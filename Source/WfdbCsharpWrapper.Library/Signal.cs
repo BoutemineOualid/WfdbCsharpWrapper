@@ -82,8 +82,7 @@ namespace WfdbCsharpWrapper
             set
             {
                 if (value != null && value.Length > MaxDescriptionLength)
-                    throw new ArgumentOutOfRangeException("Value",
-                                                          string.Format(
+                    throw new ArgumentOutOfRangeException(paramName: "value", message: string.Format(
                                                               "The length of description should not exceed {0} characters.",
                                                               MaxDescriptionLength));
 
@@ -292,6 +291,9 @@ namespace WfdbCsharpWrapper
             set { PInvoke.wfdbsetskew((int)this.Number, value); }
         }
 
+        /// <summary>
+        /// Returns the current reading pointer.
+        /// </summary>
         public Time CurrentTime
         {
             get { return GetCurrentTime(this); }
@@ -323,9 +325,14 @@ namespace WfdbCsharpWrapper
 
         #region Methods
         /// <summary>
-        /// Seeks the pointer to the specified position .
+        /// Moves the pointer to the specified position.
         /// </summary>
-        /// <param name="t">The seek position.</param>
+        /// <remarks>
+        /// WFDB lib implements a single global pointer for all available signals in the current record at the same time.
+        /// The current wrapper implementation uses a backing field to keep track of the last position for each signal independently.
+        /// This helps when reads the data from each signal alone by moving the record's pointer to the specified position each time the user accesses it but it's not going to work if the user reads the data from all the available signals in parallel (in a multithreaded manner) since the way the library implements the pointer does not support it.
+        /// </remarks>
+        /// <param name="t">The new pointer position.</param>
         public void Seek(Time t)
         {
             var ret = PInvoke.tnextvec((int)this.Number, t);
@@ -339,7 +346,7 @@ namespace WfdbCsharpWrapper
         /// Returns the available sample at the specified position.
         /// </summary>
         /// <param name="t">Position of the sample.</param>
-        /// <returns>The availbale sample at the specified position.</returns>
+        /// <returns>The available sample at the specified position.</returns>
         public Sample ReadNext(Time t)
         {
             this.Seek(t);
@@ -410,8 +417,12 @@ namespace WfdbCsharpWrapper
         /// <summary>
         /// Returns a list containing the samples available starting from the current pointer location.
         /// </summary>
+        /// <remarks>
+        /// The current wrapper implementation uses a backing field to keep track of the last position for each signal independently.
+        /// This helps when reads the data from each signal alone by moving the record's pointer to the specified position each time the user accesses it but it's not going to work if the user reads the data from all the available signals in parallel (in a multithreaded manner) since the way the library implements the pointer does not support it.
+        /// </remarks>
         /// <param name="count">Number of samples you want to read.</param>
-        /// <returns>A list containing the available samples starting for the current pointern location.</returns>
+        /// <returns>A list containing the available samples starting for the current pointer location.</returns>
         public List<Sample> ReadNext(int count)
         {
             if (IsEof)
@@ -419,6 +430,9 @@ namespace WfdbCsharpWrapper
             if (count<0)
                 throw new ArgumentOutOfRangeException("count", "Please specify a positive value.");
             
+            // moving the pointer to the last known position.
+            // The current wrapper implementation uses a backing field to keep track of the last position for each signal independently.
+            // This helps when reads the data from each signal alone by moving the record's pointer to the specified position each time the user accesses it but it's not going to work if the user reads the data from all the available signals in parallel (in a multithreaded manner) since the way the library implements the pointer does not support it.
             Seek(this.CurrentTime);
             var samples = Sample.GetSamples(this, count);
 
@@ -486,6 +500,11 @@ namespace WfdbCsharpWrapper
             }
         }
 
+        /// <summary>
+        /// Returns a list containing the available signals in the specified record.
+        /// </summary>
+        /// <param name="record">Record to be read.</param>
+        /// <returns>List of available signals in the specified record.</returns>
         internal static List<Signal> GetSignals(Record record)
         {
             var signalsCount = GetSignalsCount(record);
@@ -534,6 +553,11 @@ namespace WfdbCsharpWrapper
         }
 
         internal static Dictionary<Signal, Record> RecordCache = new Dictionary<Signal, Record>();
+        /// <summary>
+        /// Returns the record associated with the specified signal. For internal use only.
+        /// </summary>
+        /// <param name="signal">Signal reference.</param>
+        /// <returns>The record instance associated with the specified signal.</returns>
         internal static Record GetRecord(Signal signal)
         {
             if (RecordCache.ContainsKey(signal))
@@ -542,6 +566,11 @@ namespace WfdbCsharpWrapper
         }
 
         private static Dictionary<Signal, Time>  SignalCurrentTime = new Dictionary<Signal, Time>();
+        /// <summary>
+        /// Returns the current reading pointer for the specified signal.
+        /// </summary>
+        /// <param name="signal"></param>
+        /// <returns></returns>
         private static Time GetCurrentTime(Signal signal)
         {
             if (SignalCurrentTime.ContainsKey(signal))

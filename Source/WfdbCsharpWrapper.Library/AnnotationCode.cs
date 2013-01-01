@@ -131,7 +131,7 @@ namespace WfdbCsharpWrapper
         /// </summary>
         /// <param name="ahaCode">AHA Annotation code.</param>
         /// <returns>Corresponding MIT Code</returns>
-        public static AnnotationCode AhaToMitMap(char ahaCode)
+        public static AnnotationCode MapAhaToMit(char ahaCode)
         {
             return PInvoke.wfdb_ammap(ahaCode);
         }
@@ -316,7 +316,7 @@ namespace WfdbCsharpWrapper
 
         /// <summary>
         /// Gets or sets the resulting annotation code using <see cref="PInvoke.wfdb_map1"/> macro.
-        /// The resulting annotation code is one of the set {<see cref="AnnotationCode.NotQrs"/>, <see cref="AnnotationCode.Normal"/>, 
+        /// The resulting annotation code is one of {<see cref="AnnotationCode.NotQrs"/>, <see cref="AnnotationCode.Normal"/>, 
         /// <see cref="AnnotationCode.Pvc"/>, <see cref="AnnotationCode.Fusion"/>, <see cref="AnnotationCode.Learn"/>}
         /// </summary>
         public AnnotationCode Map1
@@ -366,7 +366,7 @@ namespace WfdbCsharpWrapper
         }
         #endregion
 
-        #region operators overload
+        #region operator definitions
         public static implicit operator AnnotationCode(byte value)
         {
             return new AnnotationCode(value);
@@ -391,7 +391,7 @@ namespace WfdbCsharpWrapper
 
         #region Annotation Codes
         /// <summary>
-        /// Not Qrs, no meanning but legal
+        /// Not Qrs, no meaning but legal
         /// </summary>
         public static AnnotationCode NotQrs { get { return 0; } }
 

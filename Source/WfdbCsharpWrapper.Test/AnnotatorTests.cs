@@ -41,7 +41,7 @@ namespace WfdbCsharpWrapper.Test
         [TearDown]
         public void FreeResources()
         {
-            // Closing any opened annotators
+            // Closing any open annotators
             Annotator.CloseAll();
         }
 
@@ -87,20 +87,20 @@ namespace WfdbCsharpWrapper.Test
             var annotator = new Annotator { Name = "atr", Stat = Stat.Read };
 
 
-            // ******************
-            // Keeping old annotators opened.
-            // ******************
+            // ****************************
+            // Keeping old annotators open.
+            // ****************************
 
             annotator.Open("data/100s");
-            Assert.IsTrue(annotator.IsOpened);
+            Assert.IsTrue(annotator.IsOpen);
             annotator.Close(); 
-            Assert.IsFalse(annotator.IsOpened);
+            Assert.IsFalse(annotator.IsOpen);
 
             // Reopening the same annotator.
             annotator.Open("data/100s");
-            Assert.IsTrue(annotator.IsOpened);
+            Assert.IsTrue(annotator.IsOpen);
             annotator.Close();
-            Assert.IsFalse(annotator.IsOpened);
+            Assert.IsFalse(annotator.IsOpen);
         }
 
         [Test]
@@ -110,19 +110,19 @@ namespace WfdbCsharpWrapper.Test
 
             // Opening another annotator without closing the old annotator
             annotator1.Open("data/100s");
-            Assert.IsTrue(annotator1.IsOpened);
+            Assert.IsTrue(annotator1.IsOpen);
             var expectedAnnotations1 = annotator1.ReadAll();
 
             var annotator2 = new Annotator { Name = "hrv", Stat = Stat.Read };
             annotator2.Open("data/100s");
-            Assert.IsTrue(annotator1.IsOpened);
-            Assert.IsTrue(annotator2.IsOpened);
+            Assert.IsTrue(annotator1.IsOpen);
+            Assert.IsTrue(annotator2.IsOpen);
             var expectedAnnotations2 = annotator2.ReadAll();
 
             // Closing the first annotator and keeping the second one
             annotator1.Close();
-            Assert.IsFalse(annotator1.IsOpened);
-            Assert.IsTrue(annotator2.IsOpened);
+            Assert.IsFalse(annotator1.IsOpen);
+            Assert.IsTrue(annotator2.IsOpen);
 
             var annotations2 = annotator2.ReadAll(); 
             Assert.AreEqual(expectedAnnotations2, annotations2);
@@ -134,17 +134,17 @@ namespace WfdbCsharpWrapper.Test
 
             annotator1.Close();
             annotator2.Close();
-            Assert.IsFalse(annotator1.IsOpened);
-            Assert.IsFalse(annotator2.IsOpened);
+            Assert.IsFalse(annotator1.IsOpen);
+            Assert.IsFalse(annotator2.IsOpen);
 
             // Reopening in the same order
             annotator1.Open("data/100s"); //0
-            Assert.IsTrue(annotator1.IsOpened);
-            Assert.IsFalse(annotator2.IsOpened);
+            Assert.IsTrue(annotator1.IsOpen);
+            Assert.IsFalse(annotator2.IsOpen);
             
             annotator2.Open("data/100s"); //1
-            Assert.IsTrue(annotator1.IsOpened);
-            Assert.IsTrue(annotator2.IsOpened);
+            Assert.IsTrue(annotator1.IsOpen);
+            Assert.IsTrue(annotator2.IsOpen);
 
             // Reading Some data
             annotations1 = annotator1.ReadAll();  // 0
@@ -158,12 +158,12 @@ namespace WfdbCsharpWrapper.Test
 
             // reopening in an inversed order
             annotator2.Open("data/100s"); //0
-            Assert.IsTrue(annotator2.IsOpened);
-            Assert.IsFalse(annotator1.IsOpened);
+            Assert.IsTrue(annotator2.IsOpen);
+            Assert.IsFalse(annotator1.IsOpen);
 
             annotator1.Open("data/100s"); //1
-            Assert.IsTrue(annotator1.IsOpened);
-            Assert.IsTrue(annotator2.IsOpened);
+            Assert.IsTrue(annotator1.IsOpen);
+            Assert.IsTrue(annotator2.IsOpen);
 
             // Reading Some data
             annotations1 = annotator1.ReadAll();  // 0
@@ -182,12 +182,12 @@ namespace WfdbCsharpWrapper.Test
         {
             var annotator = new Annotator {Name = "atr", Stat = Stat.Read};
             annotator.Open("data/100s");
-            Assert.IsTrue(annotator.IsOpened);
+            Assert.IsTrue(annotator.IsOpen);
 
             var annotator2 = new Annotator {Name = "hrv", Stat = Stat.Read};
             annotator2.Open("data/100s", false);
-            Assert.IsFalse(annotator.IsOpened);
-            Assert.IsTrue(annotator2.IsOpened);
+            Assert.IsFalse(annotator.IsOpen);
+            Assert.IsTrue(annotator2.IsOpen);
 
             annotator2.Close();
         }
@@ -242,7 +242,7 @@ namespace WfdbCsharpWrapper.Test
         public void ReadAllUnopenedAnnotatorTest()
         {
             var annotator = new Annotator { Name = "atr", Stat = Stat.Read };
-            var annotations = annotator.ReadAll(); // throws NotSupportedException
+            annotator.ReadAll(); // throws NotSupportedException
         }
 
         [Test]
@@ -376,7 +376,7 @@ namespace WfdbCsharpWrapper.Test
 
             annotator.ReadAll();
             annotator.Close();
-            Assert.IsFalse(annotator.IsOpened);
+            Assert.IsFalse(annotator.IsOpen);
             // Reopening
             annotator.Open("data/100s");
             Assert.IsFalse(annotator.IsEof);
@@ -388,7 +388,7 @@ namespace WfdbCsharpWrapper.Test
         public void IsEofUnopenedAnnotatorTest()
         {
             var annotator = new Annotator { Name = "atr", Stat = Stat.Read };
-            var isEof = annotator.IsEof;
+            var isEof = annotator.IsEof; // throws the exception.
         }
 
         [Test]
@@ -447,7 +447,7 @@ namespace WfdbCsharpWrapper.Test
 
         [Test]
         [ExpectedException(typeof(ArgumentOutOfRangeException))]
-        public void SeekkCountNegativeValue()
+        public void SeekCountNegativeValue()
         {
             var annotator = new Annotator { Name = "atr", Stat = Stat.Read };
             annotator.Open("data/100s");
@@ -535,10 +535,10 @@ namespace WfdbCsharpWrapper.Test
             annotators[0] = new Annotator{ Name = "atr", Stat = Stat.Read };
             Annotator.OpenAll(annotators, "data/100s");
 
-            Assert.IsTrue(annotators[0].IsOpened);
+            Assert.IsTrue(annotators[0].IsOpen);
 
             Annotator.CloseAll();
-            Assert.IsFalse(annotators[0].IsOpened);
+            Assert.IsFalse(annotators[0].IsOpen);
         }
 
         [Test]
@@ -562,7 +562,7 @@ namespace WfdbCsharpWrapper.Test
             int counter = 0;
             foreach (var annotator in annotators)
             {
-                Assert.IsTrue(annotator.IsOpened);
+                Assert.IsTrue(annotator.IsOpen);
                 Assert.AreEqual(counter, annotator.Number);
                 counter++;
             }
@@ -570,7 +570,7 @@ namespace WfdbCsharpWrapper.Test
             Annotator.CloseAll();
             foreach (var annotator in annotators)
             {
-                Assert.IsFalse(annotator.IsOpened);
+                Assert.IsFalse(annotator.IsOpen);
             }
         }
 

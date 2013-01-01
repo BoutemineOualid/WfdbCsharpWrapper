@@ -76,16 +76,25 @@ namespace WfdbCsharpWrapper
             }
         }
 
+        /// <summary>
+        /// Enable Verbose Mode.
+        /// </summary>
         public static void EnableErrorReporting()
         {
             PInvoke.wfdbverbose();
         }
 
+        /// <summary>
+        /// Disable Verbose Mode.
+        /// </summary>
         public static void DisableErrorReporting()
         {
             PInvoke.wfdbquiet();
         }
 
+        /// <summary>
+        /// Write pending changes to hard disk.
+        /// </summary>
         public static void Flush()
         {
             PInvoke.wfdbflush();
@@ -174,7 +183,10 @@ namespace WfdbCsharpWrapper
             get { return Marshal.PtrToStringAnsi(PInvoke.wfdberror()); }
         }
 
-
+        /// <summary>
+        /// Sets the current GV mode.
+        /// </summary>
+        /// <param name="mode">new GV mode.</param>
         public static void SetGVMode(GVMode mode)
         {
             PInvoke.setgvmode((int)mode);

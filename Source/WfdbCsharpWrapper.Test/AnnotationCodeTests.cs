@@ -191,14 +191,14 @@ namespace WfdbCsharpWrapper.Test
         };
 
         /// <summary>
-        /// A test for <see cref="AnnotationCode.AhaToMitMap"/>
+        /// A test for <see cref="AnnotationCode.MapAhaToMit"/>
         /// </summary>
         [Test]
         public void AhaToMitMapTest()
         {
             for (char i = 'E'; i < ']'; i++)
             {
-                var result = AnnotationCode.AhaToMitMap(i);
+                var result = AnnotationCode.MapAhaToMit(i);
                 Assert.AreEqual(result, ExpectedAhaToMitMapResult[i - 'E']);
             }
         }

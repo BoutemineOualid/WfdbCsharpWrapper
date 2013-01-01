@@ -175,9 +175,6 @@ namespace WfdbCsharpWrapper
         /// <returns>A list containing all the available samples.</returns>
         public static List<Sample> GetSamples(Signal signal)
         {
-            // TODO CHECK IF THE CURRENT OPENED RECORD IS THE SAME AS THIS ONE
-            // TODO SET THE POINTER TO THE BEGENNING OF THE SIGNAL USING signal.SetNextSamplesReadingTime();
-
             var samples = new Sample[signal.NumberOfSamples];
 
             // A row contains n columns where n is the number of signals in the record of this signal.
@@ -201,7 +198,12 @@ namespace WfdbCsharpWrapper
             return new List<Sample>(samples);
         }
 
-
+        /// <summary>
+        /// Returns the specified number of available samples from the available signals at the same time.
+        /// </summary>
+        /// <param name="numberOfSamples">Number of samples to be returned</param>
+        /// <param name="signalsCount">signals available in the current record.</param>
+        /// <returns>A list of sample vectors where each entry holds the a vector containing the samples available at the current pointer in each signal.</returns>
         public static List<Sample[]> GetSamples(int numberOfSamples, int signalsCount)
         {
             var result = new List<Sample[]>();

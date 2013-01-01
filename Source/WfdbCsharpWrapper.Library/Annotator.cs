@@ -111,8 +111,8 @@ namespace WfdbCsharpWrapper
         {
             get
             {
-                if (!IsOpened)
-                    throw new NotSupportedException("Annotator is not opened.");
+                if (!IsOpen)
+                    throw new NotSupportedException("Annotator is not open.");
                 try
                 {
                     var next = this.ReadNext();
@@ -126,7 +126,10 @@ namespace WfdbCsharpWrapper
             }
         }
 
-        public bool IsOpened 
+        /// <summary>
+        /// Returns a value indicating whether this annotator is open or not.
+        /// </summary>
+        public bool IsOpen
         { 
             get { return inputAnnotators.Contains(this) || outputAnnotators.Contains(this); }
         }
@@ -139,13 +142,13 @@ namespace WfdbCsharpWrapper
         /// Opens the current annotator associated with the specified record.
         /// </summary>
         /// <param name="record">The name of the record to be opened.</param>
-        /// <param name="keepOldOpened">Specifies whether or not you want to keep the already opened annotators in memory</param>
-        public void Open(string record, bool keepOldOpened)
+        /// <param name="keepOldOpen">Specifies whether or not you want to keep the already opened annotators in memory.</param>
+        public void Open(string record, bool keepOldOpen)
         {
-            if (IsOpened)
+            if (IsOpen)
                 throw new InvalidOperationException("Annotator already opened.");
             var keepOldAnnotatorsStr = record;
-            if (keepOldOpened)
+            if (keepOldOpen)
             {
                 if (!record.StartsWith("+") )
                     keepOldAnnotatorsStr = string.Format("+{0}", record);
@@ -180,8 +183,8 @@ namespace WfdbCsharpWrapper
         /// <param name="t">Seek position.</param>
         public void Seek(Time t)
         {
-            if (!IsOpened)
-                throw new NotSupportedException("Annotator is not opened.");
+            if (!IsOpen)
+                throw new NotSupportedException("Annotator is not open.");
 
             var ret = PInvoke.iannsettime(t);
 
@@ -197,8 +200,8 @@ namespace WfdbCsharpWrapper
         /// <param name="count">Number of annotations to skip.</param>
         public void Seek(int count)
         {
-            if (!IsOpened)
-                throw new NotSupportedException("Annotator is not opened.");
+            if (!IsOpen)
+                throw new NotSupportedException("Annotator is not open.");
             if (count < 0)
                 throw new ArgumentOutOfRangeException("count", "please specify a positive value.");
 
@@ -210,8 +213,8 @@ namespace WfdbCsharpWrapper
         /// </summary>
         public void Close()
         {
-            if (!IsOpened)
-                throw new NotSupportedException("Annotator is not opened.");
+            if (!IsOpen)
+                throw new NotSupportedException("Annotator is not open.");
             if (this.Stat == Stat.Read || this.Stat == Stat.AhaRead)
             {
                 PInvoke.iannclose((int)this.Number);
@@ -230,8 +233,8 @@ namespace WfdbCsharpWrapper
         /// <returns>The current annotation.</returns>
         public Annotation ReadNext()
         {
-            if (!IsOpened)
-                throw new NotSupportedException("Annotator is not opened.");
+            if (!IsOpen)
+                throw new NotSupportedException("Annotator is not open.");
 
             var annotation = new Annotation();
             var ret = PInvoke.getann(this.Number, ref annotation);
@@ -252,8 +255,8 @@ namespace WfdbCsharpWrapper
         /// <returns>A list containing <paramref name="count"/> annotations available starting from the current position.</returns>
         public List<Annotation> ReadNext(int count)
         {
-            if (!IsOpened)
-                throw new NotSupportedException("Annotator is not opened.");
+            if (!IsOpen)
+                throw new NotSupportedException("Annotator is not open.");
             if (count < 0)
                 throw new ArgumentOutOfRangeException("count","please specify a positive value.");
             var annotationsList = new List<Annotation>();
@@ -305,8 +308,8 @@ namespace WfdbCsharpWrapper
         /// <returns>A list containing all the available annotations.</returns>
         public List<Annotation> ReadAll()
         {
-            if (!IsOpened)
-                throw new NotSupportedException("Annotator is not opened.");
+            if (!IsOpen)
+                throw new NotSupportedException("Annotator is not open.");
 
             this.Seek(Time.Zero);
             var annotationsList = new List<Annotation>();
@@ -356,7 +359,7 @@ namespace WfdbCsharpWrapper
 
 
         /// <summary>
-        /// Closes all the opened annotators.
+        /// Closes all the open annotators.
         /// </summary>
         public static void CloseAll()
         {
@@ -400,7 +403,7 @@ namespace WfdbCsharpWrapper
 
         #endregion
 
-        #region Operators definition
+        #region Operator definitions
         public static bool operator ==(Annotator left, Annotator right)
         {
             return left.Equals(right);

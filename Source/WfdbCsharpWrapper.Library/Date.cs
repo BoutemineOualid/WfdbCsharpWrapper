@@ -59,9 +59,9 @@ namespace WfdbCsharpWrapper
         /// Returns a string that represents the current date in the DD/MM/YYYY. Format
         /// </summary>
         /// <remarks>
-        /// This method calls the datstr native function to perform this task.
+        /// This method calls the <see cref="PInvoke.datstr"/> native function to perform this task.
         /// </remarks>
-        /// <returns>A string that represenets the current time object in the HH:MM:SS Format</returns>
+        /// <returns>A string that represents the current time object in the HH:MM:SS Format</returns>
         public override string ToString()
         {
             return Marshal.PtrToStringAnsi(PInvoke.datstr(this));
