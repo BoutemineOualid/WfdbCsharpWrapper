@@ -6,6 +6,8 @@ The code bundle comes with a small set of unit tests along with some sample code
 
 At this point, the library wraps all the native C functions and their corresponding data structures and allows the developer to make calls to the native library both using procedural and OOP coding styles.
 
+The library does not support multithreading access to the signals' data.
+
 The source code documentation comes from the WFDB Programmer's Guide by George B Moody.
 
 For more information on the WFDB Library please visit the official page:
