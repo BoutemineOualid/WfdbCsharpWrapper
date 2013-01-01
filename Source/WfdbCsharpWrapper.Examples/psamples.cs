@@ -69,7 +69,7 @@ namespace WfdbCsharpWrapper.Examples
             Console.WriteLine("Record Info : " + record.Info);
             Console.WriteLine("Record's Sampling Frequency : " + record.SamplingFrequency);
 
-            Console.WriteLine("Les signaux disponibles");
+            Console.WriteLine("Available signals.");
 
             foreach (Signal signal in record.Signals)
             {
@@ -80,9 +80,9 @@ namespace WfdbCsharpWrapper.Examples
                 Console.WriteLine("Signal's Number of samples : " + signal.NumberOfSamples);
                 Console.WriteLine("Signal's First Sample : " + signal.InitValue);
 
-                Console.WriteLine("--------------------------------------");
-                Console.WriteLine("Affichage des 10 premiers points du trace (Signal)");
-                Console.WriteLine("--------------------------------------");
+                Console.WriteLine("------------------------------------------");
+                Console.WriteLine("Showing the first 10 samples of the signal");
+                Console.WriteLine("------------------------------------------");
 
                 List<Sample> samples = signal.ReadNext(10);
 
