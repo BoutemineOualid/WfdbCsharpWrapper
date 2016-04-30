@@ -69,7 +69,7 @@ namespace WfdbCsharpWrapper
 
         private byte type;
         /// <summary>
-        /// Gets or sets annotation code; an integer between 1 and <see cref="AnnotationCode.ACMax"/>. 
+        /// Gets or sets annotation code, an integer between 1 and <see cref="AnnotationCode.ACMax"/>. 
         /// </summary>
         public AnnotationCode Type
         {

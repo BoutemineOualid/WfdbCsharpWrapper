@@ -56,15 +56,18 @@ namespace WfdbCsharpWrapper
 
         #region Methods
         /// <summary>
-        /// Returns a string that represents the current date in the DD/MM/YYYY. Format
+        /// Returns a string that represents the current date in the DD/MM/YYYY format.
         /// </summary>
         /// <remarks>
         /// This method calls the <see cref="PInvoke.datstr"/> native function to perform this task.
         /// </remarks>
-        /// <returns>A string that represents the current time object in the HH:MM:SS Format</returns>
+        /// <returns>A string that represents the current time object in the DD/MM/YYYY Format</returns>
         public override string ToString()
         {
-            return Marshal.PtrToStringAnsi(PInvoke.datstr(this));
+            IntPtr str = PInvoke.datstr(this);
+            string result = Marshal.PtrToStringAnsi(str);
+            Marshal.FreeBSTR(str);
+            return result;
         }
 
         /// <summary>
@@ -113,7 +116,7 @@ namespace WfdbCsharpWrapper
 
         #endregion
 
-        #region Operators
+        #region Operator overloads
         public static bool operator ==(Date left, Date right)
         {
             return left.Equals(right);

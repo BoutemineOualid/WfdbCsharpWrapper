@@ -45,7 +45,6 @@ namespace WfdbCsharpWrapper
     [StructLayout(LayoutKind.Sequential)]
     public struct Signal : IComparable<Signal>, IEquatable<Signal>, IEnumerable<Sample>, IDisposable
     {
-
         #region Fields, any modification will affect the behaviour of the runtime marshaller.
         private IntPtr fileName;
 
@@ -69,11 +68,13 @@ namespace WfdbCsharpWrapper
         private IntPtr description;
 
         /// <summary>
-        /// Signal description.
+        /// Signal's description text.
         /// <remarks>
         /// This is a string without embedded newlines (e.g., ‘ECG lead V1’ or ‘trans-thoracic impedance’). 
         /// The length of the description string is restricted to a maximum of <see cref="MaxDescriptionLength"/> characters,
         /// not including the null.
+        /// This field is used internally by the wrapper implementation to fetch the current signal's <see cref="Number"/>. If two or more signals share the same description, 
+        /// the first signal in the record gets returned whenever the description string is provided.
         /// </remarks>
         /// </summary>
         public string Description
@@ -155,11 +156,15 @@ namespace WfdbCsharpWrapper
 
         private SignalStorageFormat format;
         /// <summary>
-        /// The signal storage format. The most commonly-used formats are format 8 (8-bit
+        /// The signal storage format. 
+        /// <remarks>
+        /// The most commonly-used formats are format 8 (8-bit
         /// first differences), format 16 (16-bit amplitudes), and format 212 (pairs of 12-bit
         /// amplitudes bit-packed into byte triplets). See <see cref="SignalStorageFormat"/> enumeration for a complete
-        /// list of supported formats. All signals belonging to the same group must be
+        /// list of supported formats.
+        /// All signals belonging to the same group must be
         /// stored in the same format.
+        /// </remarks>
         /// </summary>
         public SignalStorageFormat Format
         {
@@ -185,10 +190,13 @@ namespace WfdbCsharpWrapper
 
         private int blockSize;
         /// <summary>
-        /// The block size, in bytes. For signal files that reside on Unix character device
+        /// The block size, in bytes.
+        /// <remarks>
+        /// For signal files that reside on Unix character device
         /// special files (or their equivalents), the BlockSize field indicates how many bytes
         /// must be read or written at a time. For ordinary disk files, BlockSize is zero. 
         /// All signals belonging to a given group have the same BlockSize.
+        /// </remarks>
         /// </summary>
         public int BlockSize
         {
@@ -198,8 +206,11 @@ namespace WfdbCsharpWrapper
 
         private int adcResoluation;
         /// <summary>
-        /// The ADC resolution in bits. Typical ADCs have resolutions between 8 and 16
+        /// The ADC resolution in bits.
+        /// <remarks>
+        /// Typical ADCs have resolutions between 8 and 16
         /// bits inclusive.
+        /// </remarks>
         /// </summary>
         public int AdcResolution
         {
@@ -210,9 +221,12 @@ namespace WfdbCsharpWrapper
         private int adcZero;
         /// <summary>
         /// The ADC output given an input that falls exactly at the center of the ADC
-        /// range (normally 0 VDC). Bipolar ADCs produce two’s complement output; for
+        /// range (normally 0 VDC).
+        /// <remarks>
+        /// Bipolar ADCs produce two’s complement output; for
         /// these, AdcZero is usually zero. For the MIT DB, however, an offset binary
         /// ADC was used, and AdcZero was 1024.
+        /// </remarks>
         /// </summary>
         public int AdcZero
         {
@@ -222,14 +236,16 @@ namespace WfdbCsharpWrapper
 
         private int baseLine;
         /// <summary>
-        /// The value of ADC output that would map to 0 physical units input. The value
-        /// of AdcZero is not synonymous with that of Baseline (the isoelectric or physical
+        /// The value of ADC output that would map to 0 physical units input.
+        /// <remarks>
+        /// The value of AdcZero is not synonymous with that of Baseline (the isoelectric or physical
         /// zero level of the signal); the Baseline is a characteristic of the signal, while
         /// AdcZero is a characteristic of the digitizer. The value of baseline need not
         /// necessarily lie within the output range of the ADC; for example, if the units
         /// are ‘degrees_Kelvin’, and the ADC range is 200–300 degrees Kelvin, baseline
         /// corresponds to absolute zero, and lies well outside the range of values actually
         /// produced by the ADC.
+        /// </remarks>
         /// </summary>
         public int Baseline
         {
@@ -241,10 +257,13 @@ namespace WfdbCsharpWrapper
         /// <summary>
         /// The number of samples in the signal. (Exception: in multi-frequency records,
         /// NumberOfSamples is the number of samples divided by SamplesPerFrame, see above, i.e., the number of
-        /// frames.) All signals in a given record must have the same nsamp. If nsamp is
-        /// zero, the number of samples is unspecified, and the cksum (see the next item)
+        /// frames.).
+        /// <remarks>
+        /// All signals in a given record must have the same NumberOfSamples. If NumberOfSamples is
+        /// zero, the number of samples is unspecified, and the cksum 
         /// is not used; this is useful for specifying signals that are obtained from pipes,
         /// for which the length may not be known.
+        /// </remarks>
         /// </summary>
         public int NumberOfSamples
         {
@@ -255,7 +274,7 @@ namespace WfdbCsharpWrapper
         private int checkSum;
         /// <summary>
         /// A 16-bit checksum of all samples. This field is not usually accessed by application
-        /// programs; newheader records checksums calculated by putvec when it creates a
+        /// programs; newheader records checksums calculated by <see cref="PInvoke.putvec"/> when it creates a
         /// new ‘hea’ file, and getvec compares checksums that it calculates against cksum
         /// at the end of the record, provided that the entire record was read through
         /// without skipping samples.
@@ -272,19 +291,26 @@ namespace WfdbCsharpWrapper
         /// <summary>
         /// Gets the signal number.
         /// </summary>
+        /// <remarks>
+        /// The current wrapper implementation uses the signal's description to recover the underlying number since it's the only available method to find it (<see cref="PInvoke.findsig"/>).
+        /// This implies that the property getter would potentially fail in case two or more signals share the same description.
+        /// </remarks>
         public int Number
         {
             get { return PInvoke.findsig(this.Description); }
         }
 
         /// <summary>
-        /// Gets the record of this signal
+        /// Gets the record to which this signal belongs.
         /// </summary>
         public Record Record
         {
             get { return GetRecord(this); }
         }
 
+        /// <summary>
+        /// Gets or sets the intersignal's skew.
+        /// </summary>
         public int Skew
         {
             get { return PInvoke.wfdbgetskew((int)this.Number); }
@@ -292,7 +318,7 @@ namespace WfdbCsharpWrapper
         }
 
         /// <summary>
-        /// Returns the current reading pointer.
+        /// Returns the current reading pointer's position.
         /// </summary>
         public Time CurrentTime
         {
@@ -325,12 +351,14 @@ namespace WfdbCsharpWrapper
 
         #region Methods
         /// <summary>
-        /// Moves the pointer to the specified position.
+        /// Moves the reading pointer to the specified position.
         /// </summary>
         /// <remarks>
         /// WFDB lib implements a single global pointer for all available signals in the current record at the same time.
-        /// The current wrapper implementation uses a backing field to keep track of the last position for each signal independently.
-        /// This helps when reads the data from each signal alone by moving the record's pointer to the specified position each time the user accesses it but it's not going to work if the user reads the data from all the available signals in parallel (in a multithreaded manner) since the way the library implements the pointer does not support it.
+        /// The current wrapper implementation however uses a backing field to keep track of the last position for each signal independently.
+        /// This helps when reading data from each signal independently by keeping the state of the record's pointer for each signal independently.
+        /// Although it allows the calling code to manipulate each signal's data in isolation, the current implementation will only work in a singlethreaded context.
+        /// Concurrent access might result in an unpredictable behaviour.
         /// </remarks>
         /// <param name="t">The new pointer position.</param>
         public void Seek(Time t)
@@ -345,22 +373,12 @@ namespace WfdbCsharpWrapper
         /// <summary>
         /// Returns the available sample at the specified position.
         /// </summary>
-        /// <param name="t">Position of the sample.</param>
+        /// <param name="t">Position of the sample to be read.</param>
         /// <returns>The available sample at the specified position.</returns>
         public Sample ReadNext(Time t)
         {
             this.Seek(t);
-            // Pinvoke.sample is not flexible.
-            //Sample s = PInvoke.sample((int)this.Number, t);
-            //var ret = PInvoke.sample_valid();
-            //if (ret == 0)
-            //    throw new InvalidOperationException("End of the record reached.");
-            //else if (ret == -1)
-            //    throw new InvalidOperationException(string.Format("No sample available at time {0}", t));
-
-            var s = this.ReadNext();
-            RegisterSignalTime(this, t + 1);
-            return s;
+            return this.ReadNext();
         }
 
 
@@ -368,34 +386,34 @@ namespace WfdbCsharpWrapper
         /// Returns the specified number of samples starting from the specified position.
         /// </summary>
         /// <param name="from">Reading position.</param>
-        /// <param name="count">Number of samples.</param>
-        /// <returns>A list containing the samples available starting for the specified location.</returns>
-        public List<Sample> ReadNext(Time from, int count)
+        /// <param name="count">Number of samples to be read.</param>
+        /// <returns>A list containing the available samples starting for the specified position.</returns>
+        public IEnumerable<Sample> ReadNext(Time from, int count)
         {
-            var samples = new List<Sample>();
-
+            List<Sample> samples;
+            
             try
             {
                 Seek(from);
             }
             catch (Exception e)
             {
-                throw new ArgumentException("from", e.Message);
+                throw new ArgumentException(e.Message, "from");
             }
 
             try
             {
-                samples = Sample.GetSamples(this, count);
+                samples = new List<Sample>(Sample.GetSamples(this, count));
             }
             catch (Exception e)
             {
-                throw new ArgumentException("count", e.Message);
+                throw new ArgumentException(e.Message, "count");
             }
 
             if (samples.Count < count)
             {
                 samples.Clear();
-                throw new ArgumentOutOfRangeException("count", "the number of remaining samples is less than the specified number");
+                throw new ArgumentOutOfRangeException("count", "The number of remaining samples is less than the specified number");
             }
 
             RegisterSignalTime(this, this.CurrentTime + count);
@@ -409,21 +427,29 @@ namespace WfdbCsharpWrapper
         /// <returns>Sample at the next pointer location.</returns>
         public Sample ReadNext()
         {
-            if (IsEof)
+            this.Seek(this.CurrentTime);
+            // A row contains n columns where n is the number of available signals in the record holding the provided signal.
+            var row = new Sample[this.Record.Signals.Count];
+            // Read the current row
+            var ret = PInvoke.getvec(row);
+            if (ret == -1) // EoF
                 throw new InvalidOperationException("Failure : EOF reached");
-            return ReadNext(1)[0];
+            if (ret == -3)
+                throw new NotSupportedException("Unexpected physical end of file.");
+            if (ret == -4)
+                throw new NotSupportedException("Checksum error.");
+            // now save a reference
+            row[this.Number].SignalNumber = this.Number;
+            RegisterSignalTime(this, this.CurrentTime + 1);
+            return row[this.Number];
         }
 
         /// <summary>
-        /// Returns a list containing the samples available starting from the current pointer location.
+        /// Returns a list containing the specified number of samples available starting from the current pointer location.
         /// </summary>
-        /// <remarks>
-        /// The current wrapper implementation uses a backing field to keep track of the last position for each signal independently.
-        /// This helps when reads the data from each signal alone by moving the record's pointer to the specified position each time the user accesses it but it's not going to work if the user reads the data from all the available signals in parallel (in a multithreaded manner) since the way the library implements the pointer does not support it.
-        /// </remarks>
         /// <param name="count">Number of samples you want to read.</param>
         /// <returns>A list containing the available samples starting for the current pointer location.</returns>
-        public List<Sample> ReadNext(int count)
+        public IEnumerable<Sample> ReadNext(int count)
         {
             if (IsEof)
                 throw new InvalidOperationException("Failure : EOF reached");
@@ -431,10 +457,12 @@ namespace WfdbCsharpWrapper
                 throw new ArgumentOutOfRangeException("count", "Please specify a positive value.");
             
             // moving the pointer to the last known position.
-            // The current wrapper implementation uses a backing field to keep track of the last position for each signal independently.
-            // This helps when reads the data from each signal alone by moving the record's pointer to the specified position each time the user accesses it but it's not going to work if the user reads the data from all the available signals in parallel (in a multithreaded manner) since the way the library implements the pointer does not support it.
-            Seek(this.CurrentTime);
-            var samples = Sample.GetSamples(this, count);
+            // The current wrapper implementation however uses a backing field to keep track of the last position for each signal independently.
+            // This helps when reading data from each signal independently by keeping the state of the record's pointer for each signal independently.
+            // Although it allows the calling code to manipulate each signal's data in isolation, the current implementation will only work in a singlethreaded context.
+            // Concurrent access might result in an unpredictable behaviour.
+            this.Seek(this.CurrentTime);
+            var samples = new List<Sample>(Sample.GetSamples(this, count));
 
             if (samples.Count < count)
             {
@@ -450,34 +478,30 @@ namespace WfdbCsharpWrapper
         /// Returns the available samples from the current position to the end of the signal.
         /// </summary>
         /// <returns></returns>
-        public List<Sample> ReadToEnd()
+        public IEnumerable<Sample> ReadToEnd()
         {
-            var restOfAnnotations = new List<Sample>();
             while (!this.IsEof)
             {
-                restOfAnnotations.Add(this.ReadNext());
+                yield return this.ReadNext();
             }
-            return restOfAnnotations;
         }
 
         /// <summary>
         /// Gets the list of all available samples in the current signal
         /// </summary>
         /// <returns>A list containing all the available samples.</returns>
-        public List<Sample> ReadAll()
+        public IEnumerable<Sample> ReadAll()
         {
             this.Seek(0);
-            var samples = ReadNext((int)this.NumberOfSamples);
-            RegisterSignalTime(this, this.Duration);
-            return samples;
+            return ReadToEnd();
         }
 
         /// <summary>
         /// Gets the available signals in the specified record.
         /// </summary>
-        /// <param name="record">The record name.</param>
+        /// <param name="record">The name of the record to be opened.</param>
         /// <returns>A list containing the signals of the specified record.</returns>
-        public static List<Signal> GetSignals(string record)
+        public static IEnumerable<Signal> GetSignals(string record)
         {
             var signalsCount = GetSignalsCount(record);
             if (signalsCount == -1)// no input file
@@ -505,7 +529,7 @@ namespace WfdbCsharpWrapper
         /// </summary>
         /// <param name="record">Record to be read.</param>
         /// <returns>List of available signals in the specified record.</returns>
-        internal static List<Signal> GetSignals(Record record)
+        internal static IEnumerable<Signal> GetSignals(Record record)
         {
             var signalsCount = GetSignalsCount(record);
             if (signalsCount == -1)// no input file
@@ -529,9 +553,9 @@ namespace WfdbCsharpWrapper
         }
 
         /// <summary>
-        /// Gets the number of signals available in the specified record.
+        /// Gets the number of available signals in the specified record.
         /// </summary>
-        /// <param name="record">The record name.</param>
+        /// <param name="record">The name of the record to be read.</param>
         /// <returns>The number of available signals.</returns>
         public static int GetSignalsCount(string record)
         {
@@ -556,7 +580,7 @@ namespace WfdbCsharpWrapper
         /// <summary>
         /// Returns the record associated with the specified signal. For internal use only.
         /// </summary>
-        /// <param name="signal">Signal reference.</param>
+        /// <param name="signal">Signal's reference.</param>
         /// <returns>The record instance associated with the specified signal.</returns>
         internal static Record GetRecord(Signal signal)
         {
@@ -567,7 +591,7 @@ namespace WfdbCsharpWrapper
 
         private static Dictionary<Signal, Time>  SignalCurrentTime = new Dictionary<Signal, Time>();
         /// <summary>
-        /// Returns the current reading pointer for the specified signal.
+        /// Returns the current pointer's position for the specified signal.
         /// </summary>
         /// <param name="signal"></param>
         /// <returns></returns>
@@ -673,7 +697,7 @@ namespace WfdbCsharpWrapper
 
         #endregion
 
-        #region Operators definition
+        #region Operators overloads
         public static bool operator ==(Signal value1, Signal value2)
         {
             return value1.Equals(value2);

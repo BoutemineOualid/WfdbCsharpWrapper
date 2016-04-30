@@ -220,7 +220,7 @@ namespace WfdbCsharpWrapper
         /// <summary>
         /// Gets a value indicating whether or not a given code is a legal annotation code.
         /// </summary>
-        /// <returns>True if code is a legal annotation code, false otherwise</returns>
+        /// <returns>True if code is a legal annotation code, false otherwise.</returns>
         public bool IsAnnotation
         {
             get
@@ -240,7 +240,7 @@ namespace WfdbCsharpWrapper
 
         private byte value;
         /// <summary>
-        /// Gets the integer value of this annotation code
+        /// Gets the integer value of this annotation code.
         /// </summary>
         public byte Value
         {
@@ -270,7 +270,7 @@ namespace WfdbCsharpWrapper
         /// </summary>
         /// <remarks>
         /// The strings returned by EcgString are usually
-        /// the same as those returned by String, but they can be modified only using this property's setter.
+        /// the same as those returned by <see cref="AnnotationCode.String"/>, but they can be modified only using this property's setter.
         /// </remarks>
         public string EcgString
         {
@@ -333,7 +333,8 @@ namespace WfdbCsharpWrapper
 
         /// <summary>
         /// Gets or sets the resulting annotation code using <see cref="PInvoke.wfdb_map1"/> macro.
-        /// The resulting annotation code is one of the set {<see cref="AnnotationCode.NotQrs"/>, <see cref="AnnotationCode.Normal"/>, <see cref="AnnotationCode.Pvc"/>, <see cref="AnnotationCode.Fusion"/>, <see cref="AnnotationCode.Learn"/>}
+        /// The resulting annotation code is one of the set {<see cref="AnnotationCode.NotQrs"/>, 
+        /// <see cref="AnnotationCode.Normal"/>, <see cref="AnnotationCode.Pvc"/>, <see cref="AnnotationCode.Fusion"/>, <see cref="AnnotationCode.Learn"/>}
         /// </summary>
         public AnnotationCode Map2
         {
@@ -350,7 +351,7 @@ namespace WfdbCsharpWrapper
         /// <summary>
         /// Gets or sets the appropriate position code for this annotation code.
         /// <remarks>
-        /// This macro was first introduced in WFDB library version 6.0
+        /// This macro was first introduced in WFDB library version 6.0.
         /// </remarks>
         /// </summary>
         public AnnotationPos AnnotationPos
@@ -366,7 +367,7 @@ namespace WfdbCsharpWrapper
         }
         #endregion
 
-        #region operator definitions
+        #region operator overloads
         public static implicit operator AnnotationCode(byte value)
         {
             return new AnnotationCode(value);
@@ -391,78 +392,78 @@ namespace WfdbCsharpWrapper
 
         #region Annotation Codes
         /// <summary>
-        /// Not Qrs, no meaning but legal
+        /// Not Qrs, no meaning but legal.
         /// </summary>
         public static AnnotationCode NotQrs { get { return 0; } }
 
         /// <summary>
-        /// Normal beat 'N'
+        /// Normal beat 'N'.
         /// </summary>
         public static AnnotationCode Normal { get { return 1; } }
 
 
         /// <summary>
-        /// Left bundle branch block beat 'L'
+        /// Left bundle branch block beat 'L'.
         /// </summary>
         public static AnnotationCode Lbbb { get { return 2; } }
 
         /// <summary>
-        /// Right bundle branch block beat 'R'
+        /// Right bundle branch block beat 'R'.
         /// </summary>
         public static AnnotationCode Rbbb { get { return 3; } }
 
         /// <summary>
-        /// Bundle branch block beat (unspecified) 'B'
+        /// Bundle branch block beat (unspecified) 'B'.
         /// </summary>
         public static AnnotationCode Bbb { get { return 25; } }
 
         /// <summary>
-        /// Atrial premature beat 'A'
+        /// Atrial premature beat 'A'.
         /// </summary>
         public static AnnotationCode Apc { get { return 8; } }
 
         /// <summary>
-        /// Aberrated atrial premature beat 'a'
+        /// Aberrated atrial premature beat 'a'.
         /// </summary>
         public static AnnotationCode Aberr { get { return 4; } }
 
         /// <summary>
-        /// Nodal (junctional) premature beat 'J'
+        /// Nodal (junctional) premature beat 'J'.
         /// </summary>
         public static AnnotationCode Npc { get { return 7; } }
 
         /// <summary>
-        /// Supraventricular premature or ectopic beat (atrial or nodal) 'S'
+        /// Supraventricular premature or ectopic beat (atrial or nodal) 'S'.
         /// </summary>
         public static AnnotationCode Svpb { get { return 9; } }
 
         /// <summary>
-        /// Premature ventricular contraction 'V'
+        /// Premature ventricular contraction 'V'.
         /// </summary>
         public static AnnotationCode Pvc { get { return 5; } }
 
         /// <summary>
-        /// R-on-T premature ventricular contraction 'r'
+        /// R-on-T premature ventricular contraction 'r'.
         /// </summary>
         public static AnnotationCode ROnT { get { return 41; } }
 
         /// <summary>
-        /// Fusion of ventricular and normal beat 'F'
+        /// Fusion of ventricular and normal beat 'F'.
         /// </summary>
         public static AnnotationCode Fusion { get { return 6; } }
 
         /// <summary>
-        /// Atrial escape beat 'e'
+        /// Atrial escape beat 'e'.
         /// </summary>
         public static AnnotationCode Aesc { get { return 34; } }
 
         /// <summary>
-        /// Nodal (junctional) escape beat 'j'
+        /// Nodal (junctional) escape beat 'j'.
         /// </summary>
         public static AnnotationCode Nesc { get { return 11; } }
 
         /// <summary>
-        /// Supraventricular escape beat (atrial or nodal) 'n'
+        /// Supraventricular escape beat (atrial or nodal) 'n'.
         /// <remarks>
         /// This code was first introduced in WFDB library version 4.0.
         /// </remarks>
@@ -470,27 +471,27 @@ namespace WfdbCsharpWrapper
         public static AnnotationCode Svesc { get { return 35; } }
 
         /// <summary>
-        /// Ventricular escape beat 'E'
+        /// Ventricular escape beat 'E'.
         /// </summary>
         public static AnnotationCode Vesc { get { return 10; } }
 
         /// <summary>
-        /// Paced beat '/'
+        /// Paced beat '/'.
         /// </summary>
         public static AnnotationCode Pace { get { return 12; } }
 
         /// <summary>
-        /// Fusion of paced and normal beat 'f'
+        /// Fusion of paced and normal beat 'f'.
         /// </summary>
         public static AnnotationCode Pfus { get { return 38; } }
 
         /// <summary>
-        /// Unclassifiable beat 'Q'
+        /// Unclassifiable beat 'Q'.
         /// </summary>
         public static AnnotationCode Unknown { get { return 13; } }
 
         /// <summary>
-        /// Beat not classified during learning '?'
+        /// Beat not classified during learning '?'.
         /// </summary>
         public static AnnotationCode Learn { get { return 30; } }
 

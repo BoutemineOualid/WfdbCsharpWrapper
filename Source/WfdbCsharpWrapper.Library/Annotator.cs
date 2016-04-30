@@ -46,7 +46,7 @@ namespace WfdbCsharpWrapper
         #region Properties
         private IntPtr name;
         /// <summary>
-        /// Gets or sets annotator name.
+        /// Gets or sets the annotator's name.
         /// <remarks>
         /// The name ‘atr’ is reserved for a reference annotation
         /// file supplied by the creator of the database record to document its contents as
@@ -139,7 +139,7 @@ namespace WfdbCsharpWrapper
         #region Methods
 
         /// <summary>
-        /// Opens the current annotator associated with the specified record.
+        /// Opens the annotator associated with the specified record for read access.
         /// </summary>
         /// <param name="record">The name of the record to be opened.</param>
         /// <param name="keepOldOpen">Specifies whether or not you want to keep the already opened annotators in memory.</param>
@@ -205,7 +205,7 @@ namespace WfdbCsharpWrapper
             if (count < 0)
                 throw new ArgumentOutOfRangeException("count", "please specify a positive value.");
 
-            this.ReadNext(count).Clear();
+            ((List<Annotation>) this.ReadNext(count)).Clear();
         }
 
         /// <summary>
@@ -249,11 +249,11 @@ namespace WfdbCsharpWrapper
         }
 
         /// <summary>
-        /// Returns <paramref name="count"/> annotations available starting from the current position.
+        /// Returns the available <paramref name="count"/> annotations starting from the current position.
         /// </summary>
-        /// <param name="count">Number of annotations you want to read</param>
+        /// <param name="count">Number of annotations to be read</param>
         /// <returns>A list containing <paramref name="count"/> annotations available starting from the current position.</returns>
-        public List<Annotation> ReadNext(int count)
+        public IEnumerable<Annotation> ReadNext(int count)
         {
             if (!IsOpen)
                 throw new NotSupportedException("Annotator is not open.");
@@ -283,37 +283,30 @@ namespace WfdbCsharpWrapper
         /// <param name="from">Start position.</param>
         /// <param name="duration">Range length.</param>
         /// <returns>A list containing the avaialble annotations between <paramref name="from"/> and <paramref name="from"/>+<paramref name="duration"/> </returns>
-        public List<Annotation> ReadNext(Time from, Time duration)
+        public IEnumerable<Annotation> ReadNext(Time from, Time duration)
         {
             Seek(from);
-            var annotations = new List<Annotation>();
-
             var toTime = from + duration;
             Annotation currentAnnotation; 
             while (true)
             {
                 currentAnnotation = this.ReadNext();
                 if (currentAnnotation.Time >= toTime || this.IsEof)
-                    break;
-                annotations.Add(currentAnnotation);
+                    yield break;
+                yield return currentAnnotation;
             }
-
-            //this.CurrentTime = annotations[annotations.Count - 1].Time;
-            return annotations;
         }
 
         /// <summary>
-        /// Returns all the available annotations.
+        /// Returns all available annotations in the current annotator file.
         /// </summary>
-        /// <returns>A list containing all the available annotations.</returns>
-        public List<Annotation> ReadAll()
+        /// <returns>A list containing all available annotations in the current annotator file.</returns>
+        public IEnumerable<Annotation> ReadAll()
         {
             if (!IsOpen)
                 throw new NotSupportedException("Annotator is not open.");
 
             this.Seek(Time.Zero);
-            var annotationsList = new List<Annotation>();
-
             var ret = 0;
             Annotation annotation;
             while (true)
@@ -321,11 +314,10 @@ namespace WfdbCsharpWrapper
                 annotation = new Annotation();
                 ret = PInvoke.getann(this.Number, ref annotation);
                 if (ret == 0)
-                    annotationsList.Add(annotation);
-                else 
-                    break;
+                    yield return annotation;
+                else
+                    yield break;
             }
-            return annotationsList;
         }
 
         public bool Equals(Annotator other)
@@ -359,7 +351,7 @@ namespace WfdbCsharpWrapper
 
 
         /// <summary>
-        /// Closes all the open annotators.
+        /// Closes all open annotators.
         /// </summary>
         public static void CloseAll()
         {
@@ -380,9 +372,9 @@ namespace WfdbCsharpWrapper
         }
 
         /// <summary>
-        /// Opens all the available annotators associated with the specified record.
+        /// Opens all available annotators associated with the specified record file.
         /// </summary>
-        /// <param name="annotators">An array that will hold the returned annotators objects list.</param>
+        /// <param name="annotators">An array holding the returned annotator objects.</param>
         /// <param name="record">Record's name.</param>
         public static void OpenAll(Annotator[] annotators, string record)
         {
@@ -403,7 +395,7 @@ namespace WfdbCsharpWrapper
 
         #endregion
 
-        #region Operator definitions
+        #region Operator overloads
         public static bool operator ==(Annotator left, Annotator right)
         {
             return left.Equals(right);

@@ -133,7 +133,7 @@ namespace WfdbCsharpWrapper
         /// <returns>A list of sample vectors where each entry holds the a vector containing the samples available at the current pointer in each signal.</returns>
         public List<Sample[]> GetSamples(int numberOfSamples)
         {
-            return Sample.GetSamples(numberOfSamples, this.Signals.Count);
+            return new List<Sample[]>(Sample.GetSamples(numberOfSamples, this.Signals.Count));
         }
 
         /// <summary>
@@ -176,7 +176,7 @@ namespace WfdbCsharpWrapper
             {
                 try
                 {
-                    this.signals = Signal.GetSignals(this);
+                    this.signals = new List<Signal>(Signal.GetSignals(this));
                     
                     // Loading the info string
                     this.Info = string.Empty;

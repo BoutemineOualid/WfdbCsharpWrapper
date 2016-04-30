@@ -32,6 +32,7 @@
 using System;
 using NUnit.Framework;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace WfdbCsharpWrapper.Test
 {
@@ -134,7 +135,7 @@ namespace WfdbCsharpWrapper.Test
         public void GetSignalsValidDataTest()
         {
             // Dealing with real data.
-            var s = Signal.GetSignals("data/100s");
+            var s = Signal.GetSignals("data/100s").ToList();
 
             Assert.AreEqual(2, s.Count);
 
@@ -266,7 +267,7 @@ namespace WfdbCsharpWrapper.Test
         [Test]
         public void NumberTest()
         {
-            var signals = Signal.GetSignals("data/100s");
+            var signals = Signal.GetSignals("data/100s").ToList();
             Assert.AreEqual(0, signals[0].Number);
             Assert.AreEqual(1, signals[1].Number);
         }
@@ -282,7 +283,7 @@ namespace WfdbCsharpWrapper.Test
                 Assert.IsTrue(r.Signals[1].Record == r);
             }
 
-            var signals = Signal.GetSignals("data/100s");
+            var signals = new List<Signal>(Signal.GetSignals("data/100s"));
             Assert.IsTrue(signals[0].Record == signals[1].Record);
         }
 
@@ -302,7 +303,7 @@ namespace WfdbCsharpWrapper.Test
                 signal.ReadNext((int)signal.NumberOfSamples / 2);
                 Assert.IsFalse(signal.IsEof);
 
-                signal.ReadAll();
+                signal.ReadAll().ToList();
                 Assert.IsTrue(signal.IsEof);
 
                 signal.Seek(0);
@@ -366,11 +367,11 @@ namespace WfdbCsharpWrapper.Test
                 var signal = r.Signals[0];
                 Assert.IsFalse(signal.IsEof);
 
-                Assert.AreEqual(signal.NumberOfSamples, signal.ReadAll().Count);
+                Assert.AreEqual(signal.NumberOfSamples, signal.ReadAll().Count());
                 Assert.IsTrue(signal.IsEof);
 
                 // Recall
-                Assert.AreEqual(signal.NumberOfSamples, signal.ReadAll().Count);
+                Assert.AreEqual(signal.NumberOfSamples, signal.ReadAll().Count());
                 Assert.IsTrue(signal.IsEof);
             }
         }
@@ -382,7 +383,7 @@ namespace WfdbCsharpWrapper.Test
             {
                 r.Open();
                 var signal = r[0];
-                var expectedSamples = signal.ReadAll();
+                var expectedSamples = signal.ReadAll().ToList(); // force a loop over the enumerator to generate the list.
 
                 signal.Seek(0);
 
@@ -433,7 +434,7 @@ namespace WfdbCsharpWrapper.Test
 
                 var signal = r.Signals[0];
                 Assert.IsFalse(signal.IsEof);
-                var expectedSamples = signal.ReadAll();
+                var expectedSamples = signal.ReadAll().ToList();
                 
                 var expectedFirstSample = expectedSamples[0];
                 Assert.AreEqual(expectedFirstSample, signal.ReadNext(Time.Zero));
@@ -464,24 +465,24 @@ namespace WfdbCsharpWrapper.Test
                 r.Open();
 
                 var signal = r.Signals[0];
-                var expectedSamples = signal.ReadAll();
+                var expectedSamples = signal.ReadAll().ToList();
 
                 // lower bound
                 var expectedFirstSample = expectedSamples[0];
-                Assert.AreEqual(expectedFirstSample, signal.ReadNext(Time.Zero, 1)[0]);
-                Assert.AreEqual(signal.InitValue, signal.ReadNext(Time.Zero, 1)[0]);
+                Assert.AreEqual(expectedFirstSample, signal.ReadNext(Time.Zero, 1).FirstOrDefault());
+                Assert.AreEqual(signal.InitValue, signal.ReadNext(Time.Zero, 1).FirstOrDefault());
 
                 // Upper bound
                 var expectedLastSample = expectedSamples[expectedSamples.Count - 1];
                 Time lastSampleTime = signal.Duration - 1;
 
-                Assert.AreEqual(expectedLastSample, signal.ReadNext(lastSampleTime, 1)[0]);
+                Assert.AreEqual(expectedLastSample, signal.ReadNext(lastSampleTime, 1).FirstOrDefault());
 
-                var samples = signal.ReadNext(0, (int)signal.NumberOfSamples);
+                var samples = signal.ReadNext(0, (int)signal.NumberOfSamples).ToList();
                 Assert.AreEqual(expectedSamples, samples);
                 Assert.IsTrue(signal.IsEof);
 
-                samples = signal.ReadNext(0, (int)signal.NumberOfSamples / 2);
+                samples = signal.ReadNext(0, (int)signal.NumberOfSamples / 2).ToList();
                 
                 expectedSamples.RemoveRange((int)signal.NumberOfSamples / 2, (int)signal.NumberOfSamples / 2);
 
@@ -490,7 +491,7 @@ namespace WfdbCsharpWrapper.Test
 
                 try
                 {
-                    signal.ReadNext(signal.Duration / 2, (int)signal.NumberOfSamples);
+                    signal.ReadNext(signal.Duration / 2, (int)signal.NumberOfSamples).ToList();
                     Assert.Fail("ArgumentOutOfRangeException should have been thrown.");
                 }
                 catch (ArgumentOutOfRangeException)
@@ -499,7 +500,7 @@ namespace WfdbCsharpWrapper.Test
 
                 try
                 {
-                    signal.ReadNext(signal.Duration + 5, (int)signal.NumberOfSamples);
+                    signal.ReadNext(signal.Duration + 5, (int)signal.NumberOfSamples).ToList();
                     Assert.Fail("ArgumentException should have been thrown.");
                 }
                 catch (ArgumentException)
@@ -508,7 +509,7 @@ namespace WfdbCsharpWrapper.Test
 
                 try
                 {
-                    signal.ReadNext(signal.Duration / 2, -5);
+                    signal.ReadNext(signal.Duration / 2, -5).ToList();
                     Assert.Fail("ArgumentException should have been thrown.");
                 }
                 catch (ArgumentException)
@@ -525,7 +526,7 @@ namespace WfdbCsharpWrapper.Test
                 r.Open();
 
                 var signal = r.Signals[0];
-                var expectedSamples = signal.ReadAll();
+                var expectedSamples = signal.ReadAll().ToList();
                 
                 signal.Seek(0);
 
@@ -550,7 +551,7 @@ namespace WfdbCsharpWrapper.Test
 
                 var signal = r.Signals[0];
                 Assert.IsFalse(signal.IsEof);
-                var expectedSamples = signal.ReadAll();
+                var expectedSamples = signal.ReadAll().ToList();
                 var expectedFirstSample = expectedSamples[0];
                 var expectedLastSample = expectedSamples[expectedSamples.Count - 1];
 
@@ -580,7 +581,7 @@ namespace WfdbCsharpWrapper.Test
 
                 var signal = r.Signals[0];
                 Assert.IsFalse(signal.IsEof);
-                var expectedSamples = signal.ReadAll();
+                var expectedSamples = signal.ReadAll().ToList();
                 for (int i = 0; i < expectedSamples.Count; i++)
                 {
                     Assert.AreEqual(expectedSamples[i], signal[i]);

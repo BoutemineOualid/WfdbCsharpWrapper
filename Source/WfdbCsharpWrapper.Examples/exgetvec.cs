@@ -32,6 +32,7 @@
  */
 
 using System;
+using System.Linq;
 
 namespace WfdbCsharpWrapper.Examples
 {
@@ -101,8 +102,8 @@ namespace WfdbCsharpWrapper.Examples
             using (var record = new Record("data/100s"))
             {
                 record.Open();
-                var samples1 = record.Signals[0].ReadNext(10);
-                var samples2 = record.Signals[1].ReadNext(10);
+                var samples1 = record.Signals[0].ReadNext(10).ToList();
+                var samples2 = record.Signals[1].ReadNext(10).ToList();
                 for (int i = 0; i < 10; i++)
                 {
                     Console.WriteLine("{0}\t{1}", samples1[i], samples2[i]);
@@ -117,10 +118,10 @@ namespace WfdbCsharpWrapper.Examples
             using (var record = new Record("data/100s"))
             {
                 record.Open();
-                var samples1 = record.Signals[0].ReadNext(10);
+                var samples1 = record.Signals[0].ReadNext(10).ToList();
 
                 record.Signals[1].Seek(10); // moving the reading pointer of the second signal by ten positions
-                var samples2 = record.Signals[1].ReadNext(10);
+                var samples2 = record.Signals[1].ReadNext(10).ToList();
                 for (int i = 0; i < 10; i++)
                 {
                     Console.WriteLine("{0}\t{1}", samples1[i], samples2[i]);

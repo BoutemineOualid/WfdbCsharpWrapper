@@ -65,24 +65,27 @@ namespace WfdbCsharpWrapper
         }
 
         /// <summary>
-        /// Returns a string that represents the current time in the HH:MM:SS Format
+        /// Returns a string representing the current time in the HH:MM:SS format.
         /// </summary>
         /// <remarks>
-        /// This method calls the timstr native function to perform this task.
+        /// This method calls the <see cref="PInvoke.timstr"/> native function to perform the underlying conversion task.
         /// </remarks>
-        /// <returns>A string that represenets the current time object in the HH:MM:SS Format</returns>
+        /// <returns>A string that represenets the current time object in the HH:MM:SS format.</returns>
         public override string ToString()
         {
-            return Marshal.PtrToStringAnsi(PInvoke.timstr(this));
+            IntPtr str = PInvoke.timstr(this);
+            string result = Marshal.PtrToStringAnsi(str);
+            Marshal.FreeBSTR(str);
+            return result;
         }
 
         /// <summary>
-        /// Returns a string that represents the current time in the HH:MM:SS.SSS Format
+        /// Returns a string that represents the current time in the HH:MM:SS.SSS format.
         /// </summary>
         /// <remarks>
         /// This method calls the mstimstr native function to perform this task.
         /// </remarks>
-        /// <returns>A string that represenets the current time object in the HH:MM:SS.SSS Format</returns>
+        /// <returns>A string that represenets the current time object in the HH:MM:SS.SSS format.</returns>
         public string ToMSString()
         {
             return Marshal.PtrToStringAnsi(PInvoke.mstimstr(this));
@@ -97,11 +100,11 @@ namespace WfdbCsharpWrapper
         /// </returns>
         /// <remarks>
         /// The returned value is either
-        /// - A positive value: number of sample intervals corresponding to the argument interpreted as a time interval
+        /// - A positive value: number of sample intervals corresponding to the argument interpreted as a time interval.
         /// - A negative value: (negated) elapsed time in sample intervals from the beginning of the record,
-        /// corresponding to the argument interpreted as a time of day
+        /// corresponding to the argument interpreted as a time of day.
         /// - Zero 0 : a legal return if the argument matches the base time; otherwise an error return
-        /// indicating an incorrectly formatted argument
+        /// indicating an incorrectly formatted argument.
         /// </remarks>
         /// <example>
         /// 2:14.875 2 minutes + 14.875 seconds
@@ -125,7 +128,7 @@ namespace WfdbCsharpWrapper
         /// <summary>
         /// Converts the current time object to the .NET Framework BCL Type <see cref="TimeSpan"/>
         /// </summary>
-        /// <returns>A <see cref="TimeSpan"/> that represents this object.</returns>
+        /// <returns>A <see cref="TimeSpan"/> instance that represents this object.</returns>
         public TimeSpan ToTimeSpan()
         {
             try
@@ -188,6 +191,7 @@ namespace WfdbCsharpWrapper
             return value;
         }
 
+        #region Operator overloads
         public static Time operator +(Time left, Time right)
         {
             return new Time(left.value + right.value);
@@ -212,5 +216,6 @@ namespace WfdbCsharpWrapper
         {
             return left.value > right.value;
         }
+        #endregion
     }
 }

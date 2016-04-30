@@ -32,6 +32,7 @@
 using System;
 using NUnit.Framework;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace WfdbCsharpWrapper.Test
 {
@@ -111,13 +112,13 @@ namespace WfdbCsharpWrapper.Test
             // Opening another annotator without closing the old annotator
             annotator1.Open("data/100s");
             Assert.IsTrue(annotator1.IsOpen);
-            var expectedAnnotations1 = annotator1.ReadAll();
+            var expectedAnnotations1 = annotator1.ReadAll().ToList();
 
             var annotator2 = new Annotator { Name = "hrv", Stat = Stat.Read };
             annotator2.Open("data/100s");
             Assert.IsTrue(annotator1.IsOpen);
             Assert.IsTrue(annotator2.IsOpen);
-            var expectedAnnotations2 = annotator2.ReadAll();
+            var expectedAnnotations2 = annotator2.ReadAll().ToList();
 
             // Closing the first annotator and keeping the second one
             annotator1.Close();
@@ -242,7 +243,7 @@ namespace WfdbCsharpWrapper.Test
         public void ReadAllUnopenedAnnotatorTest()
         {
             var annotator = new Annotator { Name = "atr", Stat = Stat.Read };
-            annotator.ReadAll(); // throws NotSupportedException
+            annotator.ReadAll().ToList(); // force a loop, throws NotSupportedException
         }
 
         [Test]
@@ -252,7 +253,7 @@ namespace WfdbCsharpWrapper.Test
             var annotator = new Annotator { Name = "atr", Stat = Stat.Read };
             annotator.Open("data/100s");
             annotator.Close();
-            var annotations = annotator.ReadAll();
+            annotator.ReadAll().ToList(); // force a loop
         }
 
         [Test]
@@ -305,17 +306,17 @@ namespace WfdbCsharpWrapper.Test
             annotator.Open("data/100s");
 
             // Gets the total number of annotations available in the current annotator file.
-            var availableAnnotationsCount = annotator.ReadAll().Count;
+            var availableAnnotationsCount = annotator.ReadAll().Count();
             // Reset the pointer to the first annotation.
             annotator.Seek(Time.Zero);
 
             // Read all using ReadNext(Count)
-            var readCount = annotator.ReadNext(availableAnnotationsCount).Count;
+            var readCount = annotator.ReadNext(availableAnnotationsCount).Count();
             Assert.AreEqual(availableAnnotationsCount, readCount);
             Assert.IsTrue(annotator.IsEof);
 
             // Cant read when the
-            readCount = annotator.ReadNext(1).Count;
+            readCount = annotator.ReadNext(1).Count();
             Assert.AreEqual(0, readCount);
 
             // Seeking to the middle of the file.
@@ -323,22 +324,22 @@ namespace WfdbCsharpWrapper.Test
             annotator.Seek(Time.Zero);
             annotator.Seek(middle);
 
-            readCount = annotator.ReadNext(availableAnnotationsCount).Count;
+            readCount = annotator.ReadNext(availableAnnotationsCount).Count();
             Assert.AreEqual(availableAnnotationsCount - middle, readCount);
 
             Assert.IsTrue(annotator.IsEof);
             
             // Testing boundaries
             annotator.Seek(Time.Zero);
-            readCount = annotator.ReadNext(1).Count;
+            readCount = annotator.ReadNext(1).Count();
             Assert.AreEqual(1, readCount);
 
             annotator.Seek(Time.Zero);
-            readCount = annotator.ReadNext(availableAnnotationsCount + 1).Count;
+            readCount = annotator.ReadNext(availableAnnotationsCount + 1).Count();
             Assert.AreEqual(availableAnnotationsCount, readCount);
 
             annotator.Seek(Time.Zero);
-            readCount = annotator.ReadNext(int.MaxValue).Count;
+            readCount = annotator.ReadNext(int.MaxValue).Count();
             Assert.AreEqual(availableAnnotationsCount, readCount);
 
             // Testing invalid values.
@@ -367,7 +368,7 @@ namespace WfdbCsharpWrapper.Test
             Assert.IsFalse(annotator.IsEof);
 
             // Reading all available annotations.
-            annotator.ReadAll();
+            annotator.ReadAll().ToList(); // force a loop over the enumerator.
             Assert.IsTrue(annotator.IsEof);
             
             // Seeking to the beginning.
@@ -406,7 +407,7 @@ namespace WfdbCsharpWrapper.Test
         {
             var annotator = new Annotator { Name = "atr", Stat = Stat.Read };
             annotator.Open("data/100s");
-            var expectedAllAnnotations = annotator.ReadAll();
+            var expectedAllAnnotations = annotator.ReadAll().ToList();
             var maxCount = expectedAllAnnotations.Count;
             int midCount = expectedAllAnnotations.Count / 2;
             var firstAnnotation = expectedAllAnnotations[0];
@@ -459,7 +460,7 @@ namespace WfdbCsharpWrapper.Test
         {
             var annotator = new Annotator { Name = "atr", Stat = Stat.Read };
             annotator.Open("data/100s");
-            var expectedAllAnnotations = annotator.ReadAll();
+            var expectedAllAnnotations = annotator.ReadAll().ToList();
             var maxTime = expectedAllAnnotations[expectedAllAnnotations.Count - 1].Time;
             int midIndex = expectedAllAnnotations.Count/2;
 
@@ -511,7 +512,7 @@ namespace WfdbCsharpWrapper.Test
         {
             var annotator = new Annotator { Name = "atr", Stat = Stat.Read };
             annotator.Open("data/100s");
-            var expectedAllAnnotations = annotator.ReadAll();
+            var expectedAllAnnotations = annotator.ReadAll().ToList();
             var maxTime = expectedAllAnnotations[expectedAllAnnotations.Count - 1].Time;
             
             annotator.Seek(Time.Zero);

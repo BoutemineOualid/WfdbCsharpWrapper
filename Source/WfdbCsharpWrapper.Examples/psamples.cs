@@ -33,6 +33,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace WfdbCsharpWrapper.Examples
 {
@@ -84,7 +85,7 @@ namespace WfdbCsharpWrapper.Examples
                 Console.WriteLine("Showing the first 10 samples of the signal");
                 Console.WriteLine("------------------------------------------");
 
-                List<Sample> samples = signal.ReadNext(10);
+                List<Sample> samples = signal.ReadNext(10).ToList();
 
                 for (int i = 0; i < samples.Count; i++)
                 {

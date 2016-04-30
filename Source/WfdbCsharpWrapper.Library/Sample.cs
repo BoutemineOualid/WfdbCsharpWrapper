@@ -33,6 +33,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace WfdbCsharpWrapper
 {
@@ -58,7 +59,7 @@ namespace WfdbCsharpWrapper
         public int SignalNumber 
         {
             get { return GetSignalNumber(this); }
-            private set { RegisterSignalNumber(this, value); }
+            internal set { RegisterSignalNumber(this, value); }
         }
 
 
@@ -169,44 +170,41 @@ namespace WfdbCsharpWrapper
         }
 
         /// <summary>
-        /// Returns the available samples in the specified signal.
+        /// Returns all available samples in the specified signal.
         /// </summary>
         /// <param name="signal">Source Signal.</param>
         /// <returns>A list containing all the available samples.</returns>
-        public static List<Sample> GetSamples(Signal signal)
+        public static IEnumerable<Sample> GetSamples(Signal signal)
         {
-            var samples = new Sample[signal.NumberOfSamples];
-
-            // A row contains n columns where n is the number of signals in the record of this signal.
-            var row = new Sample[signal.Record.Signals.Count];
             int ret = 0;
-            for (int i = 0; i < samples.Length; i++)
+            signal.Seek(Time.Zero);
+            for (int i = 0; i < signal.NumberOfSamples; i++)
             {
+                // A row contains n columns where n is the number of available signals in the record holding the provided signal.
+                var row = new Sample[signal.Record.Signals.Count];
                 // Read the current row
                 ret = PInvoke.getvec(row);
                 if (ret == -1) // end of data
-                    break;
+                    yield break;
                 else if (ret == -3)
                     throw new NotSupportedException("Unexpected physical end of file.");
                 else if (ret == -4)
                     throw new NotSupportedException("Checksum error.");
                 
                 // now save a reference
-                samples[i] = row[signal.Number];
-                samples[i].SignalNumber = signal.Number;
+                row[signal.Number].SignalNumber = signal.Number;
+                yield return row[signal.Number];
             }
-            return new List<Sample>(samples);
         }
 
         /// <summary>
-        /// Returns the specified number of available samples from the available signals at the same time.
+        /// Returns the specified number of samples from the available signals at the same time.
         /// </summary>
-        /// <param name="numberOfSamples">Number of samples to be returned</param>
-        /// <param name="signalsCount">signals available in the current record.</param>
-        /// <returns>A list of sample vectors where each entry holds the a vector containing the samples available at the current pointer in each signal.</returns>
-        public static List<Sample[]> GetSamples(int numberOfSamples, int signalsCount)
+        /// <param name="numberOfSamples">Number of samples to be read.</param>
+        /// <param name="signalsCount">Number of available signal in the current record.</param>
+        /// <returns>A list of sample vectors where each entry holds an array containing the available samples at the current pointer in each signal.</returns>
+        public static IEnumerable<Sample[]> GetSamples(int numberOfSamples, int signalsCount)
         {
-            var result = new List<Sample[]>();
             int ret = 0;
             for (int i = 0; i < numberOfSamples; i++)
             {
@@ -214,7 +212,7 @@ namespace WfdbCsharpWrapper
                 // Read the current row
                 ret = PInvoke.getvec(samples);
                 if (ret == -1) // end of data
-                    break;
+                    yield break;
                 else if (ret == -3)
                     throw new NotSupportedException("Unexpected physical end of file.");
                 else if (ret == -4)
@@ -223,9 +221,8 @@ namespace WfdbCsharpWrapper
                 {
                     samples[j].SignalNumber = j;
                 }
-                result.Add(samples);
+                yield return samples;
             }
-            return result;
         }
 
         /// <summary>
@@ -234,40 +231,33 @@ namespace WfdbCsharpWrapper
         /// <param name="signal">Source Signal.</param>
         /// <param name="numberOfSamples">Number of samples to read.</param>
         /// <returns>A list containing <paramref name="numberOfSamples"/> samples.</returns>
-        public static List<Sample> GetSamples(Signal signal, int numberOfSamples)
+        public static IEnumerable<Sample> GetSamples(Signal signal, int numberOfSamples)
         {
-            var samples = new Sample[numberOfSamples];
-            // A row contains n columns where n is the number of signals in the record of this signal.
-            var row = new Sample[signal.Record.Signals.Count];
+            if (numberOfSamples < 0)
+                throw new ArgumentException("Positive value expected.", "numberOfSamples");
+
             int ret = 0;
-            int i = 0;
-            for (i = 0; i < numberOfSamples; i++)
+            for (int i = 0; i < numberOfSamples; i++)
             {
+                // A row contains n columns where n is the number of available signals in the record holding the provided signal.
+                var row = new Sample[signal.Record.Signals.Count];
                 // Read the current row
                 ret = PInvoke.getvec(row);
                 if (ret == -1) // end of data
-                    break;
+                    yield break;
                 else if (ret == -3)
                     throw new NotSupportedException("Unexpected physical end of file.");
                 else if (ret == -4)
                     throw new NotSupportedException("Checksum error.");
                 // now save a reference
-                samples[i] = row[signal.Number];
-                samples[i].SignalNumber = signal.Number;
+                row[signal.Number].SignalNumber = signal.Number;
+                yield return row[signal.Number];
             }
-
-            var samplesList = new List<Sample>(samples);
-
-            if (numberOfSamples > i)
-            {
-                samplesList.RemoveRange(i, numberOfSamples-i);
-            }
-            return samplesList;
         }
 
         #endregion
 
-        #region Operator definitions
+        #region Operator overloads
         public static implicit operator Sample(int adu)
         {
             return new Sample { Adu = adu };

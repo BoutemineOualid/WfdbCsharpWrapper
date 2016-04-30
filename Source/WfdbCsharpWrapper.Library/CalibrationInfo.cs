@@ -45,8 +45,10 @@ namespace WfdbCsharpWrapper
         private string signalType;
         /// <summary>
         /// Gets or sets a string (without embedded tabs or newlines) that describes the type(s) of signals to which the calibration specifications apply.
-        /// Usually, SignalType is an exact match to (or a prefix of) the desc field of the
+        /// <remarks>
+        /// Usually, <see cref="SignalType"/> is an exact match to (or a prefix of) the <see cref="Signal.Description"/> field of the
         /// <see cref="Signal"/> object that describes a matching signal.
+        /// </remarks>
         /// </summary>
         public string SignalType
         {
@@ -63,9 +65,12 @@ namespace WfdbCsharpWrapper
         private string units;
         /// <summary>
         /// Gets or sets a string without embedded whitespace that specifies the physical units 
-        /// of signals to which the calibration specifications apply. Usually, the units field of a 
+        /// of signals to which the calibration specifications apply. 
+        /// <remarks>
+        /// Usually, the units field of a 
         /// <see cref="CalibrationInfo"/> structure must exactly match
-        /// the <see cref="Signal.Units"/>  field of the <see cref="Signal"/> structure that describes a matching signal.
+        /// the <see cref="Signal.Units"/> field of the <see cref="Signal"/> structure that describes a matching signal.
+        /// </remarks>
         /// </summary>
         public string Units
         {
@@ -81,10 +86,12 @@ namespace WfdbCsharpWrapper
 
         private double scale;
         /// <summary>
-        /// Gets or sets the customary plotting scale, in physical units per centimeter. WFDB applications
-        /// that produce graphical output may use scale as a default. Except
+        /// Gets or sets the customary plotting scale, in physical units per centimeter. 
+        /// <remarks>
+        /// WFDB applications that produce graphical output may use scale as a default. Except
         /// in unusual circumstances, signals of different types should be plotted at equal
         /// multiples of their respective scales.
+        /// </remarks>
         /// </summary>
         public double Scale
         {
@@ -101,8 +108,10 @@ namespace WfdbCsharpWrapper
         private double low;
         /// <summary>
         /// Gets or sets the value (in physical units) corresponding to the low level of a calibration
-        /// pulse. If the signal is AC-coupled, low is zero, and high is the
-        /// pulse amplitude.
+        /// pulse. 
+        /// <remarks>
+        /// If the signal is AC-coupled, low is zero, and high is the pulse amplitude.
+        /// </remarks>
         /// </summary>
         public double Low
         {
@@ -119,8 +128,10 @@ namespace WfdbCsharpWrapper
         private double high;
         /// <summary>
         /// Gets or sets the values (in physical units) corresponding to high level of a calibration
-        /// pulse. If the signal is AC-coupled, low is zero, and high is the
-        /// pulse amplitude.
+        /// pulse. 
+        /// <remarks>
+        /// If the signal is AC-coupled, low is zero, and high is the pulse amplitude.
+        /// </remarks>
         /// </summary>
         public double High
         {
@@ -168,7 +179,7 @@ namespace WfdbCsharpWrapper
         /// If successful, it fills in the contents of the CalibrationInfo structure.
         /// </returns>
         /// <remarks>
-        /// caller must not modify the contents of the strings addressed by the <see cref="SignalType"/> and <see cref="Units"/> fields of the CalibrationInfo structure
+        /// Caller must not modify the contents of the strings addressed by the <see cref="SignalType"/> and <see cref="Units"/> fields of the CalibrationInfo structure
         /// after GetCalibration returns. GetCalibration returns data from the first entry in the calibration list that
         /// contains a <see cref="SignalType"/> field that is either an exact match or a prefix of description, and a <see cref="Units"/>
         /// field that is an exact match of units; if either description or units is NULL, however, it is ignored
@@ -192,7 +203,8 @@ namespace WfdbCsharpWrapper
         /// <remarks>
         /// This function was first introduced in WFDB library version 6.0.
         /// </remarks>
-        /// <param name="calibration">The calibration data to put in the calibration list</param>
+        /// <param name="calibration">The calibration data to put in the calibration list.</param>
+        /// <returns>A value indicating whether or not the operation was successful.</returns>
         public static bool PutCalibration(CalibrationInfo calibration)
         {
             int ret = PInvoke.putcal(ref calibration);
@@ -202,8 +214,7 @@ namespace WfdbCsharpWrapper
         }
 
         /// <summary>
-        /// Discards the current calibration list and returns the memory that it occupied
-        /// to the heap. 
+        /// Discards the current calibration list and returns the memory that it occupied to the heap. 
         /// </summary>
         /// <remarks>
         /// Note that <see cref="Wfdb.Quit"/> does not perform the function of FlushCalibrationList. 
