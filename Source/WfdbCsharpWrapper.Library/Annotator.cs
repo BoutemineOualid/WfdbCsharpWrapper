@@ -259,8 +259,6 @@ namespace WfdbCsharpWrapper
                 throw new NotSupportedException("Annotator is not open.");
             if (count < 0)
                 throw new ArgumentOutOfRangeException("count","please specify a positive value.");
-            var annotationsList = new List<Annotation>();
-            
             int counter = 0;
             var ret = 0;
             while (counter < count)
@@ -269,12 +267,10 @@ namespace WfdbCsharpWrapper
                 ret = PInvoke.getann(this.Number, ref annotation);
                 counter++;
                 if (ret == 0)
-                    annotationsList.Add(annotation);
+                    yield return annotation;
                 else 
-                    break;
+                    yield break;
             }
-            //this.CurrentTime = annotationsList[annotationsList.Count - 1].Time;
-            return annotationsList;
         }
 
         /// <summary>
