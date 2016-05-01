@@ -12,7 +12,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("Wfdbcsharplib")]
-[assembly: AssemblyCopyright("Copyright © Boutemine Oualid 2012")]
+[assembly: AssemblyCopyright("Copyright © Oualid BOUTEMINE 2009-2016")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

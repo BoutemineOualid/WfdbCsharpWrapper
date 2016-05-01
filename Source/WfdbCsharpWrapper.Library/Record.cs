@@ -2,7 +2,7 @@
  * wfdbcsharpwrapper:
  * ------------------
  * A .NET library that encapsulates the wfdb library.
- * Copyright Boutemine Oualid, 2009-2012
+ * Copyright Oualid BOUTEMINE, 2009-2016
  * Contact: boutemine.walid@hotmail.com
  * Project web page: https://github.com/oualidb/WfdbCsharpWrapper
  * Code Documentation : From WFDB Programmer's Guide BY George B. Moody
@@ -75,11 +75,11 @@ namespace WfdbCsharpWrapper
         /// Gets the signals available in this record.
         /// You should call <seealso cref="Open"/> before using this member.
         /// </summary>
-        private List<Signal> signals = new List<Signal>();
+        internal List<Signal> signals = new List<Signal>();
         /// <summary>
         /// Gets the signals associated with this record.
         /// </summary>
-        public List<Signal> Signals
+        public IEnumerable<Signal> Signals
         {
             get
             {
@@ -118,9 +118,9 @@ namespace WfdbCsharpWrapper
         {
             get
             {
-                if (i >= this.Signals.Count)
+                if (i >= this.signals.Count)
                     throw new ArgumentOutOfRangeException("i");
-                return this.Signals[i];
+                return this.signals[i];
             }
         }
         #endregion
@@ -133,7 +133,7 @@ namespace WfdbCsharpWrapper
         /// <returns>A list of sample vectors where each entry holds the a vector containing the samples available at the current pointer in each signal.</returns>
         public List<Sample[]> GetSamples(int numberOfSamples)
         {
-            return new List<Sample[]>(Sample.GetSamples(numberOfSamples, this.Signals.Count));
+            return new List<Sample[]>(Sample.GetSamples(numberOfSamples, this.signals.Count));
         }
 
         /// <summary>
@@ -237,7 +237,7 @@ namespace WfdbCsharpWrapper
                 signal.Dispose();
             }
 
-            this.Signals.Clear();
+            this.signals.Clear();
             this.Info = string.Empty;
             this.SamplingFrequency = 0;
             this.IsNew = true;

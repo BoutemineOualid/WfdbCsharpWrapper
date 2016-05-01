@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Oualid BOUTEMINE")]
 [assembly: AssemblyProduct("WfdbCsharpWrapper.Examples")]
-[assembly: AssemblyCopyright("Copyright © Oualid Boutemine 2012")]
+[assembly: AssemblyCopyright("Copyright © Oualid Boutemine 2009-2016")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

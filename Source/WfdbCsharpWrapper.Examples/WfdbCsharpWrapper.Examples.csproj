@@ -70,18 +70,20 @@
     <CodeAnalysisFailOnMissingRules>false</CodeAnalysisFailOnMissingRules>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>WfdbCsharpWrapper.Examples.Program</StartupObject>
+    <StartupObject>WfdbCsharpWrapper.Examples.example3</StartupObject>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="example3.cs" />
+    <Compile Include="exannstr.cs" />
     <Compile Include="exgetann.cs" />
     <Compile Include="exgetvec.cs" />
     <Compile Include="pgain.cs" />
-    <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="psamples.cs" />
+    <Compile Include="psamplex.cs" />
     <Compile Include="wfdbversion.cs" />
   </ItemGroup>
   <ItemGroup>

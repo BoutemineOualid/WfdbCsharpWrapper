@@ -30,65 +30,61 @@
  * please visit PhysioNet (http://www.physionet.org/).
  * _______________________________________________________________________________
  */
-
 using System;
 
 namespace WfdbCsharpWrapper.Examples
 {
-    class pgain
+    public class example3
     {
         static void Main(string[] args)
         {
             UsingPInvoke();
-            UsingSignal();
-            UsingRecord();
-            Console.Read();
+            UsingWrapperClasses();
+            Console.ReadLine();
         }
 
-        private static void UsingPInvoke()
+        private static void UsingWrapperClasses()
         {
-            Console.WriteLine("pgain Using PInvoke call");
-            int i, nsig;
-            Signal[] siarray;
 
-            nsig = PInvoke.isigopen("data/100s", null, 0);
-            if (nsig < 1)
+            var a = new Annotator();
+            a.Stat = Stat.Read;
+            a.Name = "atr";
+            a.Open("data/100s");
+
+            while (!a.IsEof)
+            {
+                var annot = a.ReadNext();
+                Console.WriteLine("{0} (%{1}) {2} {3} {4} {5} {6}",
+                       PInvoke.timstr(-(annot.Time)),
+                       annot.Time,
+                       PInvoke.annstr(annot.Type),
+                       annot.SubType,
+                       annot.ChannelNumber,
+                       annot.AnnotatorNumber,
+                       (!string.IsNullOrEmpty(annot.Aux)) ? annot.Aux + 1 : "");
+            }
+        }
+
+        static void UsingPInvoke()
+        {
+            Annotator a = new Annotator();
+            a.Name = "data/100s"; // just use 100s for demo
+            a.Stat = Stat.Read;
+
+            Annotation annot = new Annotation();
+            PInvoke.sampfreq("data/100s");
+
+            if (PInvoke.annopen("data/100s", ref a, 1) < 0) 
                 return;
-            siarray = new Signal[nsig];
-            nsig = PInvoke.isigopen("data/100s", siarray, nsig);
-            for (i = 0; i < nsig; i++)
-            {
-                Console.Write("signal {0} gain = {1}\n", i, siarray[i].Gain);
-            }
-            PInvoke.wfdbquit();
-        }
-
-        private static void UsingSignal()
-        {
-            Console.WriteLine("pgain Using Signal Class");
-            var signals = Signal.GetSignals("data/100s");
-            int counter = 0; 
-            foreach (var signal in signals)
-            {
-                Console.WriteLine("Signal {0} gain = {1}", counter, signal.Gain);
-                counter++;
-            }
-            Wfdb.Quit();
-        }
-
-        private static void UsingRecord()
-        {
-            Console.WriteLine("pgain Using Record Class");
-            using (var record = new Record("data/100s"))
-            {
-                record.Open();
-                int counter = 0;
-                foreach (var signal in record)// or (var signal in record.Signals)
-                {
-                    Console.WriteLine("Signal {0} gain = {1}", counter, signal.Gain);
-                    counter++;
-                }
-            }
+            while (PInvoke.getann(0, ref annot) == 0)
+                Console.WriteLine("{0} (%{1}) {2} {3} {4} {5} {6}",
+                       PInvoke.timstr(-(annot.Time)),
+                       annot.Time,
+                       PInvoke.annstr(annot.Type),
+                       annot.SubType, 
+                       annot.ChannelNumber, 
+                       annot.AnnotatorNumber,
+                       (!string.IsNullOrEmpty(annot.Aux)) ? annot.Aux + 1 : "");
         }
     }
 }

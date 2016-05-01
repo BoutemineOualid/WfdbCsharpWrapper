@@ -2,7 +2,7 @@
  * wfdbcsharpwrapper:
  * ------------------
  * A .NET library that encapsulates the wfdb library.
- * Copyright Boutemine Oualid, 2009-2012
+ * Copyright Oualid BOUTEMINE, 2009-2016
  * Contact: boutemine.walid@hotmail.com
  * Project web page: https://github.com/oualidb/WfdbCsharpWrapper
  * Code Documentation : From WFDB Programmer's Guide BY George B. Moody
@@ -429,7 +429,7 @@ namespace WfdbCsharpWrapper
         {
             this.Seek(this.CurrentTime);
             // A row contains n columns where n is the number of available signals in the record holding the provided signal.
-            var row = new Sample[this.Record.Signals.Count];
+            var row = new Sample[this.Record.signals.Count];
             // Read the current row
             var ret = PInvoke.getvec(row);
             if (ret == -1) // EoF
@@ -516,7 +516,7 @@ namespace WfdbCsharpWrapper
                 var objRecord = new Record(record);
                 foreach (var signal in signals)
                 {
-                    objRecord.Signals.Add(signal);
+                    objRecord.signals.Add(signal);
                     if (!RecordCache.ContainsKey(signal))
                         RecordCache.Add(signal, objRecord);
                 }

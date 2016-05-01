@@ -2,7 +2,7 @@
  * wfdbcsharpwrapper:
  * ------------------
  * A .NET library that encapsulates the wfdb library.
- * Copyright Boutemine Oualid, 2009-2012
+ * Copyright Oualid BOUTEMINE, 2009-2016
  * Contact: boutemine.walid@hotmail.com
  * Project web page: https://github.com/oualidb/WfdbCsharpWrapper
  * wfdb: 
@@ -30,6 +30,7 @@
  * _______________________________________________________________________________
  */
 using System;
+using System.Linq;
 using NUnit.Framework;
 
 namespace WfdbCsharpWrapper.Test
@@ -61,48 +62,48 @@ namespace WfdbCsharpWrapper.Test
             using (record)
             {
                 record.Open();
-                Assert.AreEqual(2, record.Signals.Count);
-                Assert.AreEqual("100s.dat", record.Signals[0].FileName);
-                Assert.AreEqual("100s.dat", record.Signals[1].FileName);
+                Assert.AreEqual(2, record.Signals.Count());
+                Assert.AreEqual("100s.dat", record.Signals.ToList()[0].FileName);
+                Assert.AreEqual("100s.dat", record.Signals.ToList()[1].FileName);
 
-                Assert.AreEqual("MLII", record.Signals[0].Description);
-                Assert.AreEqual("V5", record.Signals[1].Description);
+                Assert.AreEqual("MLII", record.Signals.ToList()[0].Description);
+                Assert.AreEqual("V5", record.Signals.ToList()[1].Description);
 
-                Assert.AreEqual(21600, record.Signals[0].NumberOfSamples);
-                Assert.AreEqual(21600, record.Signals[1].NumberOfSamples);
+                Assert.AreEqual(21600, record.Signals.ToList()[0].NumberOfSamples);
+                Assert.AreEqual(21600, record.Signals.ToList()[1].NumberOfSamples);
 
-                Assert.AreEqual(SignalStorageFormat.Sf212Bit, record.Signals[0].Format);
-                Assert.AreEqual(SignalStorageFormat.Sf212Bit, record.Signals[1].Format);
+                Assert.AreEqual(SignalStorageFormat.Sf212Bit, record.Signals.ToList()[0].Format);
+                Assert.AreEqual(SignalStorageFormat.Sf212Bit, record.Signals.ToList()[1].Format);
 
-                Assert.AreEqual(1, record.Signals[0].SamplesPerFrame);
-                Assert.AreEqual(1, record.Signals[1].SamplesPerFrame);
+                Assert.AreEqual(1, record.Signals.ToList()[0].SamplesPerFrame);
+                Assert.AreEqual(1, record.Signals.ToList()[1].SamplesPerFrame);
 
-                Assert.AreEqual(Gain.DefaultGain, record.Signals[0].Gain);
-                Assert.AreEqual(Gain.DefaultGain, record.Signals[1].Gain);
+                Assert.AreEqual(Gain.DefaultGain, record.Signals.ToList()[0].Gain);
+                Assert.AreEqual(Gain.DefaultGain, record.Signals.ToList()[1].Gain);
 
-                Assert.AreEqual(200.0, record.Signals[0].Gain.Value);
-                Assert.AreEqual(200.0, record.Signals[1].Gain.Value);
+                Assert.AreEqual(200.0, record.Signals.ToList()[0].Gain.Value);
+                Assert.AreEqual(200.0, record.Signals.ToList()[1].Gain.Value);
 
-                Assert.AreEqual(11, record.Signals[0].AdcResolution);
-                Assert.AreEqual(11, record.Signals[1].AdcResolution);
+                Assert.AreEqual(11, record.Signals.ToList()[0].AdcResolution);
+                Assert.AreEqual(11, record.Signals.ToList()[1].AdcResolution);
 
-                Assert.AreEqual(1024, record.Signals[0].AdcZero);
-                Assert.AreEqual(1024, record.Signals[1].AdcZero);
+                Assert.AreEqual(1024, record.Signals.ToList()[0].AdcZero);
+                Assert.AreEqual(1024, record.Signals.ToList()[1].AdcZero);
 
-                Assert.AreEqual(1024, record.Signals[0].Baseline);
-                Assert.AreEqual(1024, record.Signals[1].Baseline);
+                Assert.AreEqual(1024, record.Signals.ToList()[0].Baseline);
+                Assert.AreEqual(1024, record.Signals.ToList()[1].Baseline);
 
-                Assert.AreEqual(995, record.Signals[0].InitValue);
-                Assert.AreEqual(1011, record.Signals[1].InitValue);
+                Assert.AreEqual(995, record.Signals.ToList()[0].InitValue);
+                Assert.AreEqual(1011, record.Signals.ToList()[1].InitValue);
 
-                Assert.AreEqual(0, record.Signals[0].Group);
-                Assert.AreEqual(0, record.Signals[1].Group);
+                Assert.AreEqual(0, record.Signals.ToList()[0].Group);
+                Assert.AreEqual(0, record.Signals.ToList()[1].Group);
 
-                Assert.AreEqual(0, record.Signals[0].BlockSize);
-                Assert.AreEqual(0, record.Signals[1].BlockSize);
+                Assert.AreEqual(0, record.Signals.ToList()[0].BlockSize);
+                Assert.AreEqual(0, record.Signals.ToList()[1].BlockSize);
 
-                Assert.AreEqual(21537, record.Signals[0].CheckSum);
-                Assert.AreEqual(-3962, record.Signals[1].CheckSum);
+                Assert.AreEqual(21537, record.Signals.ToList()[0].CheckSum);
+                Assert.AreEqual(-3962, record.Signals.ToList()[1].CheckSum);
 
             }
         }
@@ -116,15 +117,15 @@ namespace WfdbCsharpWrapper.Test
             Assert.IsFalse(record.IsNew);
             //Assert.AreEqual(" 69 M 1085 1629 x1", record.Info);
             Assert.AreEqual((Frequency)360, record.SamplingFrequency);
-            Assert.AreEqual(2, record.Signals.Count);
+            Assert.AreEqual(2, record.Signals.Count());
             
             record.Dispose();
 
-            Assert.AreEqual(0, record.Signals.Count);
+            Assert.AreEqual(0, record.Signals.Count());
             Assert.IsTrue(record.IsNew);
             Assert.AreEqual(string.Empty, record.Info);
             Assert.AreEqual((Frequency)0, record.SamplingFrequency);
-            Assert.AreEqual(0, record.Signals.Count);
+            Assert.AreEqual(0, record.Signals.Count());
         }
 
         [Test]
@@ -134,8 +135,8 @@ namespace WfdbCsharpWrapper.Test
             using (record)
             {
                 record.Open();
-                Assert.AreEqual(record.Signals[0], record[0]);
-                Assert.AreEqual(record.Signals[1], record[1]);
+                Assert.AreEqual(record.Signals.ToList()[0], record[0]);
+                Assert.AreEqual(record.Signals.ToList()[1], record[1]);
             }
 
             try
@@ -158,23 +159,23 @@ namespace WfdbCsharpWrapper.Test
                 Assert.IsFalse(record.IsNew);
                 Assert.AreEqual(" 69 M 1085 1629 x1\n Aldomet, Inderal\nProduced by xform from record 100, beginning at 0:0", record.Info);
                 Assert.AreEqual((Frequency)360, record.SamplingFrequency);
-                Assert.AreEqual(2, record.Signals.Count);
+                Assert.AreEqual(2, record.Signals.Count());
             }
 
-            Assert.AreEqual(0, record.Signals.Count);
+            Assert.AreEqual(0, record.Signals.Count());
             Assert.IsTrue(record.IsNew);
             Assert.AreEqual(string.Empty, record.Info);
             Assert.AreEqual((Frequency)0, record.SamplingFrequency);
-            Assert.AreEqual(0, record.Signals.Count);
+            Assert.AreEqual(0, record.Signals.Count());
 
 
             using (record)
             {
                 record.Open();
                 Assert.IsFalse(record.IsNew);
-                Assert.AreEqual(" 69 M 1085 1629 x1", record.Info);
+                Assert.AreEqual(" 69 M 1085 1629 x1\n Aldomet, Inderal\nProduced by xform from record 100, beginning at 0:0", record.Info);
                 Assert.AreEqual((Frequency)360, record.SamplingFrequency);
-                Assert.AreEqual(2, record.Signals.Count);
+                Assert.AreEqual(2, record.Signals.Count());
             }
         }
 
@@ -201,10 +202,10 @@ namespace WfdbCsharpWrapper.Test
                 var expectedSignal1Samples0 = record[0].ReadNext(10); // read 10 samples of the first 10
                 var expectedSignal2Samples0 = record[1].ReadNext(10); // read 10 samples of the first 10
 
-                record.Signals[0].Seek(10); // advance the 1st pointer by ten samples
+                record.Signals.First().Seek(10); // advance the 1st pointer by ten samples
                 var expectedSignal1Samples10 = record[0].ReadNext(10); // read 10 samples after the first 10 samples
 
-                record.Signals[1].Seek(10); // advance the 1st pointer by ten samples
+                record.Signals.Skip(1).First().Seek(10); // advance the 1st pointer by ten samples
                 var expectedSignal2Samples10 = record[1].ReadNext(10); // read 10 samples after the first 10 samples
 
                 record.Seek(0);
@@ -215,13 +216,6 @@ namespace WfdbCsharpWrapper.Test
                 Assert.AreEqual(expectedSignal1Samples10, record[0].ReadNext(10));
                 Assert.AreEqual(expectedSignal2Samples10, record[1].ReadNext(10));
             }
-        }
-
-        [Test]
-        [Ignore]
-        public void SaveTest()
-        {
-            // TODO 
         }
 
         [Test]

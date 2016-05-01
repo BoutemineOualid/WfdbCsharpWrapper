@@ -2,7 +2,7 @@
  * wfdbcsharpwrapper:
  * ------------------
  * A .NET library that encapsulates the wfdb library.
- * Copyright Boutemine Oualid, 2009-2012
+ * Copyright Oualid BOUTEMINE, 2009-2016
  * Contact: boutemine.walid@hotmail.com
  * Project web page: https://github.com/oualidb/WfdbCsharpWrapper
  * Code Documentation : From WFDB Programmer's Guide BY George B. Moody
@@ -676,7 +676,7 @@ namespace WfdbCsharpWrapper
         public static AnnotationCode Note { get { return 22; } }
 
         /// <summary>
-        /// Link to external data '@'
+        /// Link to external data '@'.
         /// <remarks>
         /// The <see cref="Link"/>  code was first introduced in WFDB library version 9.6. The aux field
         /// of a LINK annotation contains a URL (a uniform resource locator, in the form
@@ -690,12 +690,12 @@ namespace WfdbCsharpWrapper
         public static AnnotationCode Link { get { return 36; } }
 
         /// <summary>
-        /// Value of largest valid annotation code
+        /// Value of largest valid annotation code.
         /// </summary>
         public static AnnotationCode ACMax { get { return 49; } }
 
         /// <summary>
-        /// User defined
+        /// User defined.
         /// </summary>
         public static AnnotationCode Reserved42 { get { return 42; } }
 

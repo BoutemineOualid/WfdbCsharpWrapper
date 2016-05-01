@@ -2,7 +2,7 @@
  * wfdbcsharpwrapper:
  * ------------------
  * A .NET library that encapsulates the wfdb library.
- * Copyright Boutemine Oualid, 2009-2012
+ * Copyright Oualid BOUTEMINE, 2009-2016
  * Contact: boutemine.walid@hotmail.com
  * Project web page: https://github.com/oualidb/WfdbCsharpWrapper
  * wfdb: 
@@ -186,11 +186,11 @@ namespace WfdbCsharpWrapper.Test
             Assert.AreEqual(s[0].SamplesPerFrame, s[1].SamplesPerFrame);
             Assert.IsTrue(s[0].Record.Equals(s[1].Record));
 
-            Assert.IsTrue(s[0].Record.Signals[0].Equals(s[0]));
-            Assert.IsTrue(s[0].Record.Signals[1].Equals(s[1]));
+            Assert.IsTrue(s[0].Record.Signals.ToList()[0].Equals(s[0]));
+            Assert.IsTrue(s[0].Record.Signals.ToList()[1].Equals(s[1]));
 
-            Assert.IsTrue(s[1].Record.Signals[0].Equals(s[0]));
-            Assert.IsTrue(s[1].Record.Signals[1].Equals(s[1]));
+            Assert.IsTrue(s[1].Record.Signals.ToList()[0].Equals(s[0]));
+            Assert.IsTrue(s[1].Record.Signals.ToList()[1].Equals(s[1]));
 
             Wfdb.Quit();
         }
@@ -279,8 +279,8 @@ namespace WfdbCsharpWrapper.Test
             {
                 r.Open();
 
-                Assert.IsTrue(r.Signals[0].Record == r);
-                Assert.IsTrue(r.Signals[1].Record == r);
+                Assert.IsTrue(r.Signals.ToList()[0].Record == r);
+                Assert.IsTrue(r.Signals.ToList()[1].Record == r);
             }
 
             var signals = new List<Signal>(Signal.GetSignals("data/100s"));
@@ -294,7 +294,7 @@ namespace WfdbCsharpWrapper.Test
             {
                 r.Open();
 
-                var signal = r.Signals[0];
+                var signal = r.Signals.First();
                 Assert.IsFalse(signal.IsEof);
 
                 signal.ReadNext();
@@ -324,7 +324,7 @@ namespace WfdbCsharpWrapper.Test
             {
                 r.Open();
 
-                var signal = r.Signals[0];
+                var signal = r.Signals.First();
                 Assert.IsFalse(signal.IsEof);
 
                 Assert.AreEqual(signal.InitValue, signal.ReadNext());
@@ -364,7 +364,7 @@ namespace WfdbCsharpWrapper.Test
             {
                 r.Open();
 
-                var signal = r.Signals[0];
+                var signal = r.Signals.First();
                 Assert.IsFalse(signal.IsEof);
 
                 Assert.AreEqual(signal.NumberOfSamples, signal.ReadAll().Count());
@@ -432,7 +432,7 @@ namespace WfdbCsharpWrapper.Test
             {
                 r.Open();
 
-                var signal = r.Signals[0];
+                var signal = r.Signals.First();
                 Assert.IsFalse(signal.IsEof);
                 var expectedSamples = signal.ReadAll().ToList();
                 
@@ -464,7 +464,7 @@ namespace WfdbCsharpWrapper.Test
             {
                 r.Open();
 
-                var signal = r.Signals[0];
+                var signal = r.Signals.First();
                 var expectedSamples = signal.ReadAll().ToList();
 
                 // lower bound
@@ -525,7 +525,7 @@ namespace WfdbCsharpWrapper.Test
             {
                 r.Open();
 
-                var signal = r.Signals[0];
+                var signal = r.Signals.First();
                 var expectedSamples = signal.ReadAll().ToList();
                 
                 signal.Seek(0);
@@ -549,7 +549,7 @@ namespace WfdbCsharpWrapper.Test
             {
                 r.Open();
 
-                var signal = r.Signals[0];
+                var signal = r.Signals.First();
                 Assert.IsFalse(signal.IsEof);
                 var expectedSamples = signal.ReadAll().ToList();
                 var expectedFirstSample = expectedSamples[0];
@@ -579,7 +579,7 @@ namespace WfdbCsharpWrapper.Test
             {
                 r.Open();
 
-                var signal = r.Signals[0];
+                var signal = r.Signals.First();
                 Assert.IsFalse(signal.IsEof);
                 var expectedSamples = signal.ReadAll().ToList();
                 for (int i = 0; i < expectedSamples.Count; i++)

@@ -2,7 +2,7 @@
  * wfdbcsharpwrapper:
  * ------------------
  * A .NET library that encapsulates the wfdb library.
- * Copyright Boutemine Oualid, 2009-2012
+ * Copyright Oualid BOUTEMINE, 2009-2016
  * Contact: boutemine.walid@hotmail.com
  * https://github.com/oualidb/WfdbCsharpWrapper
  * Project web page: https://github.com/oualidb/WfdbCsharpWrapper
@@ -101,7 +101,7 @@ namespace WfdbCsharpWrapper
 
         private byte channelNumber;
         /// <summary>
-        /// Gets or sets the channel number
+        /// Gets or sets the channel number.
         /// </summary>
         public byte ChannelNumber
         {
@@ -117,7 +117,7 @@ namespace WfdbCsharpWrapper
 
         private byte annotatorNumber;
         /// <summary>
-        /// Gets or sets annotator number.
+        /// Gets or sets the annotator number.
         /// </summary>
         public byte AnnotatorNumber
         {

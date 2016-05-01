@@ -2,7 +2,7 @@
  * wfdbcsharpwrapper:
  * ------------------
  * A .NET library that encapsulates the wfdb library.
- * Copyright Boutemine Oualid, 2009-2012
+ * Copyright Oualid BOUTEMINE, 2009-2016
  * Contact: boutemine.walid@hotmail.com
  * Project web page: https://github.com/oualidb/WfdbCsharpWrapper
  * Code Documentation : From WFDB Programmer's Guide BY George B. Moody
@@ -38,13 +38,15 @@ namespace WfdbCsharpWrapper.Examples
 {
     public class exgetvec
     {
-        public static void Start()
+        static void Main(string[] args)
         {
             UsingPInvoke();
             UsingWrapperClasses1();
             UsingWrapperClasses2();
             UsingWrapperClasses3();
+            Console.Read();
         }
+
 
         private static void UsingPInvoke()
         {
@@ -102,8 +104,8 @@ namespace WfdbCsharpWrapper.Examples
             using (var record = new Record("data/100s"))
             {
                 record.Open();
-                var samples1 = record.Signals[0].ReadNext(10).ToList();
-                var samples2 = record.Signals[1].ReadNext(10).ToList();
+                var samples1 = record.Signals.ToList()[0].ReadNext(10).ToList();
+                var samples2 = record.Signals.ToList()[1].ReadNext(10).ToList();
                 for (int i = 0; i < 10; i++)
                 {
                     Console.WriteLine("{0}\t{1}", samples1[i], samples2[i]);
@@ -118,10 +120,10 @@ namespace WfdbCsharpWrapper.Examples
             using (var record = new Record("data/100s"))
             {
                 record.Open();
-                var samples1 = record.Signals[0].ReadNext(10).ToList();
+                var samples1 = record.Signals.First().ReadNext(10).ToList();
 
-                record.Signals[1].Seek(10); // moving the reading pointer of the second signal by ten positions
-                var samples2 = record.Signals[1].ReadNext(10).ToList();
+                record.Signals.Skip(1).First().Seek(10); // moving the reading pointer of the second signal by ten positions
+                var samples2 = record.Signals.Skip(1).First().ReadNext(10).ToList();
                 for (int i = 0; i < 10; i++)
                 {
                     Console.WriteLine("{0}\t{1}", samples1[i], samples2[i]);

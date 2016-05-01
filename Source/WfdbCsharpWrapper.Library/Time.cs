@@ -2,7 +2,7 @@
  * wfdbcsharpwrapper:
  * ------------------
  * A .NET library that encapsulates the wfdb library.
- * Copyright Boutemine Oualid, 2009-2012
+ * Copyright Oualid BOUTEMINE, 2009-2016
  * Contact: boutemine.walid@hotmail.com
  * Project web page: https://github.com/oualidb/WfdbCsharpWrapper
  * Code Documentation : From WFDB Programmer's Guide BY George B. Moody
@@ -74,9 +74,7 @@ namespace WfdbCsharpWrapper
         public override string ToString()
         {
             IntPtr str = PInvoke.timstr(this);
-            string result = Marshal.PtrToStringAnsi(str);
-            Marshal.FreeBSTR(str);
-            return result;
+            return Marshal.PtrToStringAnsi(str);
         }
 
         /// <summary>

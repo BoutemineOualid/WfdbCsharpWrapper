@@ -8,9 +8,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("WfdbCsharpWrapper.Test")]
 [assembly: AssemblyDescription("A set of unit tests for WfdbCsharpWrappers")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Boutemine Oualid")]
+[assembly: AssemblyCompany("Oualid BOUTEMINE")]
 [assembly: AssemblyProduct("WfdbCsharpWrapper.Test")]
-[assembly: AssemblyCopyright("Copyright © Boutemine Oualid 2012")]
+[assembly: AssemblyCopyright("Copyright © Oualid BOUTEMINE 2009-2016")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

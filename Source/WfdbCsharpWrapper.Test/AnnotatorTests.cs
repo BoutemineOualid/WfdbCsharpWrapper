@@ -2,7 +2,7 @@
  * wfdbcsharpwrapper:
  * ------------------
  * A .NET library that encapsulates the wfdb library.
- * Copyright Boutemine Oualid, 2009-2012
+ * Copyright Oualid BOUTEMINE, 2009-2016
  * Contact: boutemine.walid@hotmail.com
  * Project web page: https://github.com/oualidb/WfdbCsharpWrapper
  * wfdb: 
@@ -296,7 +296,7 @@ namespace WfdbCsharpWrapper.Test
         public void ReadNextCountUnopenedAnnotatorTest()
         {
             var annotator = new Annotator { Name = "atr", Stat = Stat.Read };
-            annotator.ReadNext(5);
+            annotator.ReadNext(5).ToList(); // force a loop
         }
 
         [Test]
@@ -345,7 +345,7 @@ namespace WfdbCsharpWrapper.Test
             // Testing invalid values.
             try
             {
-                annotator.ReadNext(-1);
+                annotator.ReadNext(-1).ToList(); // force loop
                 Assert.Fail("ArgumentOutOfRangeException should have been thrown.");
             }
             catch (ArgumentOutOfRangeException)
