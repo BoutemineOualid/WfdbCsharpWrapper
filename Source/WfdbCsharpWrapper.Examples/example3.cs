@@ -31,6 +31,7 @@
  * _______________________________________________________________________________
  */
 using System;
+using System.Runtime.InteropServices;
 
 namespace WfdbCsharpWrapper.Examples
 {
@@ -78,9 +79,9 @@ namespace WfdbCsharpWrapper.Examples
                 return;
             while (PInvoke.getann(0, ref annot) == 0)
                 Console.WriteLine("{0} ({1}) {2} {3} {4} {5} {6}",
-                       PInvoke.timstr(-(annot.Time)),
+                       Marshal.PtrToStringAuto(PInvoke.timstr(-(annot.Time))),
                        annot.Time,
-                       PInvoke.annstr(annot.Type),
+                       Marshal.PtrToStringAuto(PInvoke.annstr(annot.Type)),
                        annot.SubType, 
                        annot.ChannelNumber, 
                        annot.AnnotatorNumber,
