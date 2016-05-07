@@ -54,10 +54,10 @@ namespace WfdbCsharpWrapper.Examples
             while (!a.IsEof)
             {
                 var annot = a.ReadNext();
-                Console.WriteLine("{0} (%{1}) {2} {3} {4} {5} {6}",
-                       PInvoke.timstr(-(annot.Time)),
+                Console.WriteLine("{0} ({1}) {2} {3} {4} {5} {6}",
+                       annot.Time.ToString(),
                        annot.Time,
-                       PInvoke.annstr(annot.Type),
+                       annot.Type.ToString(), // or .String
                        annot.SubType,
                        annot.ChannelNumber,
                        annot.AnnotatorNumber,
@@ -77,7 +77,7 @@ namespace WfdbCsharpWrapper.Examples
             if (PInvoke.annopen("data/100s", ref a, 1) < 0) 
                 return;
             while (PInvoke.getann(0, ref annot) == 0)
-                Console.WriteLine("{0} (%{1}) {2} {3} {4} {5} {6}",
+                Console.WriteLine("{0} ({1}) {2} {3} {4} {5} {6}",
                        PInvoke.timstr(-(annot.Time)),
                        annot.Time,
                        PInvoke.annstr(annot.Type),
