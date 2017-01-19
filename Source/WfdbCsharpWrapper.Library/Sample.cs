@@ -173,7 +173,7 @@ namespace WfdbCsharpWrapper
         /// Returns all available samples in the specified signal.
         /// </summary>
         /// <param name="signal">Source Signal.</param>
-        /// <returns>A list containing all the available samples.</returns>
+        /// <returns>A list containing all available samples.</returns>
         public static IEnumerable<Sample> GetSamples(Signal signal)
         {
             int ret = 0;
