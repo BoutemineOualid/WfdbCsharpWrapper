@@ -54,12 +54,12 @@ namespace WfdbCsharpWrapper.Test
 
         private AnnotationCode[] EnumCodes { get; set; }
         private bool[] ExpectedQrsAnnotations = new []{
-	                        false, true, true, true, true, true, true, true, true, true,			    /* 0 - 9 */
-	                        true, true, true, true, false, false, false, false, false, false,			/* 10 - 19 */
-	                        false, false, false, false, false, true, false, false, false, false,		/* 20 - 29 */
-	                        true, true, false, false, true, true, false, false, true, false,			/* 30 - 39 */
-	                        false, true, false, false, false, false, false, false, false, false			/* 40 - 49 */
-                        };
+		false, true, true, true, true, true, true, true, true, true,			/* 0 - 9 */
+		true, true, true, true, false, false, false, false, false, false,		/* 10 - 19 */
+		false, false, false, false, false, true, false, false, false, false,		/* 20 - 29 */
+		true, true, false, false, true, true, false, false, true, false,		/* 30 - 39 */
+		false, true, false, false, false, false, false, false, false, false		/* 40 - 49 */
+	};
 
         /// <summary>
         /// A test for the <see cref="AnnotationCode.IsAnnotation"/>.
@@ -215,7 +215,7 @@ namespace WfdbCsharpWrapper.Test
 	        'Q',	'O',	'[',	']',	'N',		/* 30 - 34 */
 	        'N',	'O',	'O',	'N',	'O',		/* 35 - 39 */
 	        'O',	'R',	'O',	'O',	'O',		/* 40 - 44 */
-	        'O',	'O',	'O',	'O',	'O'		    /* 45 - 49 */
+	        'O',	'O',	'O',	'O',	'O'		/* 45 - 49 */
         };
 
         /// <summary>
