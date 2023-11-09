@@ -35,6 +35,7 @@
 
 using System;
 using System.Runtime.InteropServices;
+using System.Text;
 
 namespace WfdbCsharpWrapper
 {
@@ -139,11 +140,48 @@ namespace WfdbCsharpWrapper
         {
             get
             {
-                return Marshal.PtrToStringAnsi(aux);
+                if (aux == IntPtr.Zero)
+                {
+                    return string.Empty;
+                }
+
+                // Read the length prefix from memory
+                byte ansiLength = Marshal.ReadByte(aux);
+
+                // Read the ANSI string from memory, starting after the length prefix
+                byte[] ansiBytes = new byte[ansiLength];
+                Marshal.Copy(new IntPtr(aux.ToInt64() + 1), ansiBytes, 0, ansiLength);
+
+                // Convert ANSI bytes to a string
+                return Encoding.ASCII.GetString(ansiBytes);
             }
             set
             {
-                aux = Marshal.StringToHGlobalAnsi(value);
+                if (aux != IntPtr.Zero)
+                {
+                    // Free the previously allocated memory
+                    Marshal.FreeHGlobal(aux);
+                }
+
+                if (string.IsNullOrEmpty(value))
+                {
+                    aux = IntPtr.Zero;
+                    return;
+                }
+
+                // Calculate the length of the ANSI string
+                byte ansiLength = (byte)value.Length;
+
+                // Allocate memory for the length prefix and ANSI string
+                int totalLength = ansiLength + 1;
+                aux = Marshal.AllocHGlobal(totalLength);
+
+                // Copy the length value to memory
+                Marshal.WriteByte(aux, ansiLength);
+
+                // Copy the ANSI string to memory
+                byte[] ansiBytes = Encoding.ASCII.GetBytes(value);
+                Marshal.Copy(ansiBytes, 0, new IntPtr(aux.ToInt64() + 1), ansiBytes.Length);
             }
         }
 
